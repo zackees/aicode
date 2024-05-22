@@ -3,7 +3,7 @@ requires = ["setuptools>=65.5.1", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aicoder"
+name = "ai-code"
 readme = "README.md"
 description = "Front End for Aider.chat which makes it super simple to use"
 requires-python = ">=3.7"
