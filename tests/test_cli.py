@@ -1,10 +1,11 @@
 """
 Unit test file.
 """
+
 import os
 import unittest
 
-COMMAND = "aicode"
+COMMAND = "aicode --help"
 
 
 class MainTester(unittest.TestCase):

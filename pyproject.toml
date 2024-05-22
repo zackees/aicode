@@ -11,7 +11,8 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-
+    "pipx",
+    "appdirs"
 ]
 # Change this with the version number bump.
 version = "1.0.0"
@@ -44,4 +45,4 @@ ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
 
 [project.scripts]
-aicode = "aicode.cli:main"
+aicode = "aicode.main:main"
