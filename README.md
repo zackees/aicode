@@ -11,8 +11,9 @@ The most advanced ai coding tool on the planet.
 
 # About
 
-`Aider.chat` is by far the BEST aicoding assistant on the planet. However, it's a little complex to install
-on Windows/Linux/MacOS. `aicode` fixes these problems. Think of `aicode` as `aider.chat` but on easy mode.
+Okay well `aider.chat` is by far the BEST aicoding assistant on the planet. But `aicode`, a front end for
+`aider.chat` is EASIER TO USE! So use this whenever you can for Windows/Linux/MacOS.
+Think of `aicode` as `aider.chat` but on easy mode.
 
 One foot gun here is that `aider.chat` only works on files in a git repo. therefore you must be in a git repo
 for `aicode` to work. This is required because `aider.chat` will generate a repo map as part of the query.
