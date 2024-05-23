@@ -3,7 +3,7 @@ requires = ["setuptools>=65.5.1", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ai-coder"
+name = "advanced-aicode"
 readme = "README.md"
 description = "Front End for Aider.chat which makes it super simple to use"
 requires-python = ">=3.7"
@@ -15,7 +15,7 @@ dependencies = [
     "appdirs"
 ]
 # Change this with the version number bump.
-version = "1.0.0"
+version = "1.0.1"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

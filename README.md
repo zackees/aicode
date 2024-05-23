@@ -1,5 +1,6 @@
-# template-python-cmd
-A template for quickly making a python lib that has a command line program attached
+# aicode
+
+The most advanced ai coding tool on the planet.
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
@@ -7,15 +8,56 @@ A template for quickly making a python lib that has a command line program attac
 [![Ubuntu_Tests](../../actions/workflows/push_ubuntu.yml/badge.svg)](../../actions/workflows/push_ubuntu.yml)
 [![Win_Tests](../../actions/workflows/push_win.yml/badge.svg)](../../actions/workflows/push_win.yml)
 
-Replace `template-python-cmd` and `template_python_cmd` with your command. Run tox until it's
-correct.
 
-To develop software, run `. ./activate.sh`
+# About
 
-# Windows
+`Aider.chat` is by far the BEST aicoding assistant on the planet. However, it's a little complex to install
+on Windows/Linux/MacOS. `aicode` fixes these problems. Think of `aicode` as `aider.chat` but on easy mode.
 
-This environment requires you to use `git-bash`.
+One foot gun here is that `aider.chat` only works on files in a git repo. therefore you must be in a git repo
+for `aicode` to work. This is required because `aider.chat` will generate a repo map as part of the query.
 
-# Linting
 
-Run `./lint.sh` to find linting errors using `pylint`, `flake8` and `mypy`.
+## Usage:
+
+```bash
+pip install advanced-aicode
+aicode
+```
+
+### Note
+
+The package name is NOT the same as the command tool. The package is `advanced-aicode` and the tool is called `aicode`. Someone
+else grabbed package name `aicode` over a year ago and this is the best name I could come up with to get it into pypi.
+
+
+# aicode is better than aider.chat in the following ways
+
+
+  * `aicode` is easier to install. Like WAY easier. It will tell you what you need to do to complete the installation, such
+    as setting the api key if none are detected.
+  * `aicode` will not f@ck up your global pip environment. We fix this by lazily installing `aider.chat` using `pipx`
+  * `aicode` will change the directory to a the project root containing a `.git` directory. `aider.chat` will just fail to run.
+  * `aicode` will default to NOT creating a git commit on every change. Instead it will
+    just raw dog it to your current repo. This simplifies usage because most of the time you will
+    only be editing one file and if you don't like the change you can just invoke undo on the file.
+    If you want to create a git commit on every change (so that you can use /undo)
+    then pass in `aicode -a`. This works better if you are editing multiple files and want and want
+    to step back in history, must most of the time it's better to just let `aicode` work on one file
+    at a time.
+  * `aicode` has the benefit of allowing easy upgrades to `aider.chat` from the command line using `aicode --update` which will
+    invoke `pipx` update on the backend.
+  * `aicode` will default to using `ChatGPT4-o` if it detects you have have an openapi key.
+  * `aicode` will save and insert the environmental variables on demand. `aider.chat` requires that you
+    insert these variables in your `~/.bashrc` file (linux) or the equivalent for Windows and MacOS.
+  * `aicode` will check for new versions in the background and inform you of an update on the NEXT run of
+    `aicode` and the command line you can use. This was a feature that `aider.chat` program actually implemented for this project.
+  * `aicode` will ask you to modify the `.gitignore` file so that you aren't uploading your f*cking chat
+    history to your repo by default.
+
+Happy CODING!
+
+# Releases
+
+  * 1.0.1 - Improve readme.
+  * 1.0.0 - Initial release.
