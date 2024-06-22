@@ -2,5 +2,7 @@
 
 set -e
 . ./activate.sh
+echo installing dependencies
+pip install -r requirements.testing.txt
 echo "Running unittests"
 pytest -n auto tests -v
