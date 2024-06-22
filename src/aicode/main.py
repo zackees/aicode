@@ -35,7 +35,7 @@ MODELS = {
         "The GPT-4 model with the 1106 preview.",
         "gpt-4-1106-preview",
     ),
-    "claude3": Model("claude3", "The Claude3 model.", "opus"),
+    "claude3": Model("claude3", "The Claude3 model.", "sonnet"),
 }
 
 CLAUD3_MODELS = {"claude3"}
@@ -66,10 +66,10 @@ class CustomHelpParser(argparse.ArgumentParser):
         if not aider_installed:
             print("aider is not installed, no more help available.")
             sys.exit(0)
-        aider_config = os.path.exists(".aider.conf.yml")
-        if not aider_config:
-            print("\naider config file not found, no more help available.")
-            sys.exit(0)
+        # aider_config = os.path.exists(".aider.conf.yml")
+        # if not aider_config:
+        #     print("\naider config file not found, no more help available.")
+        #     sys.exit(1)
         print("\n\n############ aider --help ############")
         completed_proc = subprocess.run(
             ["aider", "--help"], check=False, capture_output=True
@@ -123,8 +123,14 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         "--claude3",
         action="store_true",
     )
+    model_group.add_argument(
+        "--claude",
+        action="store_true",
+    )
     model_group.add_argument("--model", choices=MODEL_CHOICES, help="Model to use")
     args, unknown_args = argparser.parse_known_args()
+    if args.claude:
+        args.claude3 = True
     return args, unknown_args
 
 
@@ -160,12 +166,11 @@ def get_model(
         return "claude3"
     elif args.model is not None:
         return args.model
-    elif openai_key is not None:
-        return ADVANCED_MODEL
     elif anthropic_key is not None:
         return "claude3"
-    else:
-        return SLOW_MODEL
+    elif openai_key is not None:
+        return ADVANCED_MODEL
+    return "claude3"
 
 
 def extract_version_string(version_string: str) -> str:
@@ -422,7 +427,7 @@ def cli() -> int:
     # os.environ["OPENAI_API_KEY"] = openai_key
     cmd_list = ["aider", "--skip-check-update"]
     if is_anthropic_model:
-        cmd_list.append("--opus")
+        cmd_list.append("--sonnet")
     if args.auto_commit:
         cmd_list.append("--auto-commit")
     else:
@@ -457,5 +462,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.argv.extend(["--help"])
+    sys.argv.extend([])
     sys.exit(main())

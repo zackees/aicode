@@ -11,7 +11,8 @@
             "subProcess": true,
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Python: Remote Attach",
