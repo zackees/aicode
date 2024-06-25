@@ -175,9 +175,9 @@ def get_model(
 
 def extract_version_string(version_string: str) -> str:
     """
-    Extracts "v0.22.0" out of "Newer version v0.22.0 is available. To upgrade, run:"
+    Extracts version strings like "v0.22.0", "0.40.5-dev" out of messages.
     """
-    match = re.search(r"v?\d+\.\d+\.\d+\S*", version_string)
+    match = re.search(r"v?\d+\.\d+\.\d+(-\w+)?", version_string)
     if match:
         return match.group()
     raise ValueError(f"Failed to extract version string from {version_string}")
