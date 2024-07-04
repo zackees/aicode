@@ -149,7 +149,25 @@ def cleanup() -> None:
 
 def upgrade_aider() -> None:
     print("Upgrading aider...")
-    os.system("pipx upgrade aider-chat")
+    rtn = os.system("pipx upgrade aider-chat")
+    if rtn == 0:
+        print("Upgrade successful.")
+        return
+    warnings.warn("Upgrade failed, pipx may be out of date.")
+    yes = input("Would you like to try upgrading pipx? [y/N] ")
+    if yes.lower() != "y":
+        return
+    print("Upgrading pipx...")
+    PYTHON_EXE = sys.executable
+    rtn = os.system(f'"{PYTHON_EXE}" -m pip install --upgrade pipx')
+    if rtn != 0:
+        warnings.warn("Failed to upgrade pipx.")
+        return
+    rtn = os.system("pipx install aider-chat")
+    if rtn == 0:
+        print("Reinstall successful.")
+        return
+    warnings.warn("Failed to upgrade aider.")
 
 
 def get_model(
