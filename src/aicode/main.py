@@ -16,9 +16,7 @@ from typing import Optional, Tuple, Union
 
 from aicode.openaicfg import create_or_load_config, save_config
 
-ADVANCED_MODEL = "openai/gpt-4o"
-FAST_MODEL = "gpt-3.5-turbo"
-SLOW_MODEL = "openai/gpt-4o"  # now the same as ADVANCED_MODEL because it's so much better at everything
+CHAT_GPT = "openai/gpt-4o"
 
 
 @dataclass
@@ -29,16 +27,11 @@ class Model:
 
 
 MODELS = {
-    "gpt-4": Model("gpt-4", "The GPT-4 model.", "gpt-4"),
-    "gpt-4-1106-preview": Model(
-        "gpt-4-1106-preview",
-        "The GPT-4 model with the 1106 preview.",
-        "gpt-4-1106-preview",
-    ),
-    "claude3": Model("claude3", "The Claude3 model.", "sonnet"),
+    "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
+    "claude": Model("claude", "The Claude model.", "sonnet"),
 }
 
-CLAUD3_MODELS = {"claude3"}
+CLAUD3_MODELS = {"claude"}
 
 MODEL_CHOICES = list(MODELS.keys())
 
@@ -91,7 +84,7 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         "prompt", nargs="*", help="Args to pass onto aider"
     )  # Changed nargs to '*'
     argparser.add_argument("--set-key", help="Set OpenAI key")
-    argparser.add_argument("--set-anthropic-key", help="Set Claude3 key")
+    argparser.add_argument("--set-anthropic-key", help="Set Claude key")
     argparser.add_argument(
         "--upgrade", action="store_true", help="Upgrade aider using pipx"
     )
@@ -104,33 +97,19 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         action="store_true",
     )
     model_group = argparser.add_mutually_exclusive_group()
-    model_group.add_argument(
-        "--fast",
-        action="store_true",
-        default=False,
-        help=f"chat gpt 3 turbo: {FAST_MODEL}",
-    )
-    model_group.add_argument(
-        "--slow", action="store_true", default=False, help=f"chat gpt 4: {SLOW_MODEL}"
-    )
-    model_group.add_argument(
-        "--advanced",
-        action="store_true",
-        default=False,
-        help=f"bleeding edge model: {ADVANCED_MODEL}",
-    )
-    model_group.add_argument(
-        "--claude3",
-        action="store_true",
-    )
+
     model_group.add_argument(
         "--claude",
         action="store_true",
     )
     model_group.add_argument("--model", choices=MODEL_CHOICES, help="Model to use")
+    model_group.add_argument(
+        "--chatgpt",
+        action="store_true",
+        help="Use ChatGPT model",
+    )
     args, unknown_args = argparser.parse_known_args()
-    if args.claude:
-        args.claude3 = True
+
     return args, unknown_args
 
 
@@ -173,22 +152,19 @@ def upgrade_aider() -> None:
 def get_model(
     args: argparse.Namespace, anthropic_key: Optional[str], openai_key: Optional[str]
 ) -> str:
-    if args.fast:
-        return FAST_MODEL
-    elif args.slow:
-        return SLOW_MODEL
-    elif args.advanced:
-        return ADVANCED_MODEL
-    elif args.claude3:
-        assert "claude3" in MODELS
-        return "claude3"
+    if args.claude:
+        assert "claude" in MODELS
+        return "claude"
+    elif args.chatgpt:
+        return CHAT_GPT
     elif args.model is not None:
         return args.model
+        return "claude"
     elif anthropic_key is not None:
-        return "claude3"
+        return "claude"
     elif openai_key is not None:
-        return ADVANCED_MODEL
-    return "claude3"
+        return CHAT_GPT
+    return "claude"
 
 
 def extract_version_string(version_string: str) -> str:
@@ -411,7 +387,7 @@ def cli() -> int:
     is_anthropic_model = model in CLAUD3_MODELS
     if is_anthropic_model:
         if anthropic_key is None:
-            print("Claude3 key not found, please set one with --set-anthropic-key")
+            print("Claude key not found, please set one with --set-anthropic-key")
             return 1
         os.environ["ANTHROPIC_API_KEY"] = anthropic_key
     else:
