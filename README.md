@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.1.0 - The --slow, --fast, --claude3 are not long used. Now it's just --chatgpt and --claude.
   * 1.0.4 - If `--upgrade` fails, then attempt recovery by asking the user to upgrade `pipx` and then try again.
   * 1.0.3 - Improved version parsing so that stuff like X.X.X-dev can be parsed.
   * 1.0.2 - `--claude3`` now maps to sonnet mode. This is now the default if both keys are present for claude3 and openai.
