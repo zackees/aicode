@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.1.1 - Fix a infinit recursion loop while trying to find the .git directory.
   * 1.1.0 - The --slow, --fast, --claude3 are not long used. Now it's just --chatgpt and --claude.
   * 1.0.4 - If `--upgrade` fails, then attempt recovery by asking the user to upgrade `pipx` and then try again.
   * 1.0.3 - Improved version parsing so that stuff like X.X.X-dev can be parsed.

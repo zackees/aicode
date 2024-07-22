@@ -159,7 +159,6 @@ def get_model(
         return CHAT_GPT
     elif args.model is not None:
         return args.model
-        return "claude"
     elif anthropic_key is not None:
         return "claude"
     elif openai_key is not None:
@@ -345,10 +344,14 @@ def check_aiderignore() -> None:
 
 def find_path_to_git_directory() -> Path:
     path = Path.cwd()
+    prev_path = None
     while path != Path("/"):
         if (path / ".git").exists():
             return path
+        prev_path = path
         path = path.parent
+        if path == prev_path:
+            break
     raise FileNotFoundError("No git directory found")
 
 
@@ -456,5 +459,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.argv.extend([])
+    os.chdir(r"C:\users\niteris")
     sys.exit(main())
