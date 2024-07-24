@@ -212,7 +212,7 @@ def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
     new_update_version = ""
     try:
         cp = subprocess.run(
-            ["aider", "--check-update"],
+            ["aider", "--just-check-updated"],
             check=False,
             capture_output=True,
             universal_newlines=True,
