@@ -342,8 +342,8 @@ def check_aiderignore() -> None:
             file.write(file_content)
 
 
-def find_path_to_git_directory() -> Path:
-    path = Path.cwd()
+def find_path_to_git_directory(cwd: Path) -> Path:
+    path = cwd
     prev_path = None
     while path != Path("/"):
         if (path / ".git").exists():
@@ -358,11 +358,12 @@ def find_path_to_git_directory() -> Path:
 def cli() -> int:
     # does .git directory exist?
     try:
-        path = find_path_to_git_directory()
+        cwd = Path.cwd()
+        path = find_path_to_git_directory(cwd=cwd)
         print("Found git directory at", path)
         os.chdir(str(path))
     except FileNotFoundError:
-        print("There is no git directory is not a git repository.")
+        print(f"There is no git directory at or above the current directory at {cwd}")
         return 1
     args, unknown_args = parse_args()
     check_gitignore()
