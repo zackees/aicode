@@ -441,6 +441,13 @@ def cli() -> int:
     if args.keep:
         return rtn
     atexit.register(cleanup)
+    if rtn != 0:
+        # debug by showing where the aider executable is
+        aider_path = shutil.which("aider")
+        if aider_path is not None:
+            print("aider executable found at", aider_path)
+        else:
+            print("aider executable not found")
     return rtn
 
 
