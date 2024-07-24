@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.1.5 - Fixes `--just-check-update` which had a typo in the last version as `--just-check-updated`
   * 1.1.4 - Fixes `aider --check-update` with `--just-check-update`
   * 1.1.3 - Fixes `aider --skip-check-update` which is now `--no-check-update`
   * 1.1.1 - Fix a infinit recursion loop while trying to find the .git directory.

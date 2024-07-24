@@ -3,7 +3,6 @@
 import argparse
 import atexit
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +14,7 @@ from threading import Thread
 from typing import Optional, Tuple, Union
 
 from aicode.openaicfg import create_or_load_config, save_config
+from aicode.util import aider_fetch_update_string_if_out_of_date, extract_version_string
 
 CHAT_GPT = "openai/gpt-4o"
 
@@ -166,16 +166,6 @@ def get_model(
     return "claude"
 
 
-def extract_version_string(version_string: str) -> str:
-    """
-    Extracts version strings like "v0.22.0", "0.40.5-dev" out of messages.
-    """
-    match = re.search(r"v?\d+\.\d+\.\d+(-\w+)?", version_string)
-    if match:
-        return match.group()
-    raise ValueError(f"Failed to extract version string from {version_string}")
-
-
 @dataclass
 class AiderUpdateResult:
     has_update: bool
@@ -209,17 +199,11 @@ class AiderUpdateResult:
 
 
 def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
-    new_update_version = ""
+    new_update_version: str | None = None
     try:
-        cp = subprocess.run(
-            ["aider", "--just-check-updated"],
-            check=False,
-            capture_output=True,
-            universal_newlines=True,
-        )
-        if cp.returncode != 0:
+        new_update_version = aider_fetch_update_string_if_out_of_date()
+        if new_update_version is None:
             return AiderUpdateResult(False, "", "")
-        new_update_version = cp.stdout.strip()
     except KeyboardInterrupt:
         raise
     except Exception:  # pylint: disable=broad-except

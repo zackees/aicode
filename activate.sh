@@ -39,6 +39,7 @@ if [ ! -d "venv" ]; then
   export PATH="$this_dir:$PATH"
   echo "Environment created."
   pip install -e .
+  set +e
   exit 0
 fi
 
@@ -46,3 +47,4 @@ if [ "$IN_ACTIVATED_ENV" != "1" ]; then
   . ./venv/bin/activate
   export IN_ACTIVATED_ENV=1
 fi
+set +e
