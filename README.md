@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.2 - Fixes `aider --skip-check-update` which is now `--no-check-update`
   * 1.1.1 - Fix a infinit recursion loop while trying to find the .git directory.
   * 1.1.0 - The --slow, --fast, --claude3 are not long used. Now it's just --chatgpt and --claude.
   * 1.0.4 - If `--upgrade` fails, then attempt recovery by asking the user to upgrade `pipx` and then try again.

@@ -209,7 +209,7 @@ class AiderUpdateResult:
 
 
 def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
-    # rtn = os.system("aider --check-update")
+    new_update_version = ""
     try:
         cp = subprocess.run(
             ["aider", "--check-update"],
@@ -217,30 +217,25 @@ def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
             capture_output=True,
             universal_newlines=True,
         )
-        if cp.returncode == 0:
+        if cp.returncode != 0:
             return AiderUpdateResult(False, "", "")
+        new_update_version = cp.stdout.strip()
     except KeyboardInterrupt:
         raise
     except Exception:  # pylint: disable=broad-except
         return AiderUpdateResult(False, "", "")
     if current_version is None:
         cmd = "aider --version"
-        stdout = subprocess.run(
-            cmd, capture_output=True, check=False, text=True
-        ).stdout.strip()
+        stdout = subprocess.run(cmd, capture_output=True, check=False, text=True).stdout
+        stdout = stdout.strip()
         try:
             current_version = extract_version_string(stdout)
         except Exception:
             warnings.warn(f"Could not extract version info from {stdout}")
             current_version = "Unknown"
-    stdout = cp.stdout.strip()
-    # lines = stdout.split("\n")
     try:
-        # current_version: str = extract_version_string(current_version)
-        # current_version = "Unknown"  # TODO: Get current version
-        latest_version: str = extract_version_string(stdout)
+        latest_version: str = extract_version_string(new_update_version)
         out = AiderUpdateResult(True, latest_version, current_version)
-        # print(out.get_update_msg())
         return out
     except Exception as err:  # pylint: disable=broad-except
         warnings.warn(f"Failed to parse update message: {stdout}\n because of {err}")
@@ -423,7 +418,7 @@ def cli() -> int:
     os.environ["AIDER_MODEL"] = model
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     # os.environ["OPENAI_API_KEY"] = openai_key
-    cmd_list = ["aider", "--skip-check-update"]
+    cmd_list = ["aider", "--no-check-update"]
     if is_anthropic_model:
         cmd_list.append("--sonnet")
     if args.auto_commit:
