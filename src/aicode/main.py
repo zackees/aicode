@@ -467,5 +467,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    os.chdir(r"C:\users\niteris")
     sys.exit(main())
