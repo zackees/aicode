@@ -219,7 +219,8 @@ def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
             current_version = "Unknown"
     try:
         latest_version: str = extract_version_string(new_update_version)
-        out = AiderUpdateResult(True, latest_version, current_version)
+        has_update = latest_version != current_version
+        out = AiderUpdateResult(has_update, latest_version, current_version)
         return out
     except Exception as err:  # pylint: disable=broad-except
         warnings.warn(f"Failed to parse update message: {stdout}\n because of {err}")
