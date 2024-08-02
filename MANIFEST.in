@@ -1,3 +1,2 @@
 include pyproject.toml
 include requirements.testing.txt
-exclude src/aicode/aider-install

@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.1.8 - Custom path now set for pipx, should fix most pipx issues.
   * 1.1.7 - Version detection fixed now that the api has been made much better.
   * 1.1.6 - Fixes has update when the versions match
   * 1.1.5 - Fixes `--just-check-update` which had a typo in the last version as `--just-check-updated`
