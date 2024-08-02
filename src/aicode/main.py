@@ -13,8 +13,9 @@ from pathlib import Path
 from threading import Thread
 from typing import Optional, Tuple, Union
 
+from aicode.aider_update_result import AiderUpdateResult
 from aicode.openaicfg import create_or_load_config, save_config
-from aicode.util import aider_fetch_update_string_if_out_of_date, extract_version_string
+from aicode.util import aider_fetch_update_status
 
 CHAT_GPT = "openai/gpt-4o"
 
@@ -166,68 +167,6 @@ def get_model(
     return "claude"
 
 
-@dataclass
-class AiderUpdateResult:
-    has_update: bool
-    latest_version: str
-    current_version: str
-    error: Optional[str] = None
-
-    def get_update_msg(self) -> str:
-        msg = "\n#######################################\n"
-        msg += f"# UPDATE AVAILABLE: {self.current_version} -> {self.latest_version}.\n"
-        msg += "# run `aicode --upgrade` to upgrade\n"
-        msg += "#######################################\n"
-        return msg
-
-    def to_json_data(self) -> dict[str, Union[str, bool, None]]:
-        return {
-            "has_update": self.has_update,
-            "latest_version": self.latest_version,
-            "current_version": self.current_version,
-            "error": str(self.error) if self.error is not None else None,
-        }
-
-    @classmethod
-    def from_json(cls, json_data: dict[str, Union[str, bool]]) -> "AiderUpdateResult":
-        return AiderUpdateResult(
-            has_update=bool(json_data["has_update"]),
-            latest_version=str(json_data["latest_version"]),
-            current_version=str(json_data["current_version"]),
-            error=str(json_data["error"]) if json_data["error"] is not None else None,
-        )
-
-
-def aider_check_update(current_version: Optional[str]) -> AiderUpdateResult:
-    new_update_version: str | None = None
-    try:
-        new_update_version = aider_fetch_update_string_if_out_of_date()
-        if new_update_version is None:
-            return AiderUpdateResult(False, "", "")
-    except KeyboardInterrupt:
-        raise
-    except Exception:  # pylint: disable=broad-except
-        return AiderUpdateResult(False, "", "")
-    if current_version is None:
-        cmd = "aider --version"
-        stdout = subprocess.run(cmd, capture_output=True, check=False, text=True).stdout
-        stdout = stdout.strip()
-        try:
-            current_version = extract_version_string(stdout)
-        except Exception:
-            warnings.warn(f"Could not extract version info from {stdout}")
-            current_version = "Unknown"
-    try:
-        latest_version: str = extract_version_string(new_update_version)
-        has_update = latest_version != current_version
-        out = AiderUpdateResult(has_update, latest_version, current_version)
-        return out
-    except Exception as err:  # pylint: disable=broad-except
-        warnings.warn(f"Failed to parse update message: {stdout}\n because of {err}")
-        pass
-    return AiderUpdateResult(True, "Unknown", current_version)
-
-
 def check_gitignore() -> None:
     needles: dict[str, bool] = {
         ".aider*": False,
@@ -261,19 +200,9 @@ def background_update_task(config: dict) -> None:
         # Wait for aider to start so that we don't impact startup time.
         # This is really needed for windows because startup is so slow.
         time.sleep(5)
-        current_version = None
-        aider_update_info = config.get("aider_update_info")
-        if aider_update_info is not None:
-            current_version = aider_update_info.get("current_version")
-            if current_version == "Unknown":
-                current_version = None
-        update_info = aider_check_update(current_version)
-        if update_info.has_update:
-            config["aider_update_info"] = update_info.to_json_data()
-            save_config(config)
-        else:
-            config["aider_update_info"] = {}
-            save_config(config)
+        update_info = aider_fetch_update_status()
+        config["aider_update_info"] = update_info.to_json_data()
+        save_config(config)
     except KeyboardInterrupt:
         pass
     except SystemExit:

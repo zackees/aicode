@@ -4,7 +4,7 @@ Unit test file.
 
 import unittest
 
-from aicode.util import aider_fetch_update_string_if_out_of_date
+from aicode.util import AiderUpdateResult, aider_fetch_update_status
 
 
 class FetchUpdateStringIfOutOfDateTester(unittest.TestCase):
@@ -12,11 +12,15 @@ class FetchUpdateStringIfOutOfDateTester(unittest.TestCase):
 
     def test_weird_version(self) -> None:
         """Tests we can extract strings like '0.40.7-dev'."""
-        new_version = aider_fetch_update_string_if_out_of_date()
-        if new_version:
-            self.assertTrue(isinstance(new_version, str))
-            print("New version available: ", new_version)
-        # if parsing is unsuccessful an exception is thrown
+        update_status = aider_fetch_update_status()
+        self.assertIsInstance(update_status, AiderUpdateResult)
+        self.assertIsInstance(update_status.latest_version, str)
+        self.assertIsInstance(update_status.current_version, str)
+        self.assertIsInstance(update_status.has_update, bool)
+        self.assertNotEqual(update_status.latest_version, "Unknown")
+        self.assertNotEqual(update_status.current_version, "Unknown")
+        if update_status.latest_version != update_status.current_version:
+            self.assertTrue(update_status.has_update)
 
 
 if __name__ == "__main__":
