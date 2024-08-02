@@ -18,6 +18,7 @@ from aicode.openaicfg import create_or_load_config, save_config
 from aicode.util import aider_fetch_update_status
 
 CHAT_GPT = "openai/gpt-4o"
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 @dataclass
@@ -36,15 +37,41 @@ CLAUD3_MODELS = {"claude"}
 
 MODEL_CHOICES = list(MODELS.keys())
 
+CUSTOM_PATH = os.path.join(HERE, "aider-install")
+
+
+def _aider_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env["PIPX_HOME"] = CUSTOM_PATH
+    env["PIPX_BIN_DIR"] = os.path.join(CUSTOM_PATH, "bin")
+    return env
+
 
 def install_aider_if_missing() -> None:
-    bin_path = os.path.expanduser("~/.local/bin")
+    # Set the custom bin path where you want aider to be installed
+
+    # Expand the user directory in case of tilde (~)
+    bin_path = os.path.join(CUSTOM_PATH, "bin")
+
+    # Ensure the custom bin path is included in the PATH environment variable
     os.environ["PATH"] = os.environ["PATH"] + os.pathsep + bin_path
+
+    # Check if aider is already installed
     if shutil.which("aider") is not None:
         return
+
+    # Print installing message
     print("Installing aider...")
-    rtn = os.system("pipx install aider-chat")
-    if rtn != 0:
+
+    # Get the current Python executable
+    PYTHON_EXE = sys.executable
+
+    # Install aider using pipx in the custom bin path
+    cmd = f'"{PYTHON_EXE}" -m pipx install aider-chat'
+    env = _aider_env()
+    completed_proc = subprocess.run(cmd, check=False, env=env, shell=True)
+    # Ensure installation was successful
+    if completed_proc.returncode != 0:
         assert False, "Failed to install aider"
     assert shutil.which("aider") is not None, "aider not found after install"
 
@@ -127,27 +154,36 @@ def cleanup() -> None:
                 warnings.warn(f"Failed to remove {file}")
 
 
-def upgrade_aider() -> None:
+def upgrade_aider() -> int:
     print("Upgrading aider...")
-    rtn = os.system("pipx upgrade aider-chat")
+    env = _aider_env()
+    # rtn = os.system("pipx upgrade aider-chat")
+    PYTHON_EXE = sys.executable
+    rtn = subprocess.run(
+        f"{PYTHON_EXE} -m pip install --upgrade aider-chat", env=env
+    ).returncode
     if rtn == 0:
         print("Upgrade successful.")
-        return
+        return 0
     warnings.warn("Upgrade failed, pipx may be out of date.")
     yes = input("Would you like to try upgrading pipx? [y/N] ")
     if yes.lower() != "y":
-        return
+        return 0
     print("Upgrading pipx...")
     PYTHON_EXE = sys.executable
-    rtn = os.system(f'"{PYTHON_EXE}" -m pip install --upgrade pipx')
+    # rtn = os.system(f'"{PYTHON_EXE}" -m pip install --upgrade pipx')
+    rtn = subprocess.run(
+        f"{PYTHON_EXE} -m pip install --upgrade pipx", env=env
+    ).returncode
     if rtn != 0:
         warnings.warn("Failed to upgrade pipx.")
-        return
-    rtn = os.system("pipx install aider-chat")
+        return rtn
+    rtn = upgrade_aider()
     if rtn == 0:
         print("Reinstall successful.")
-        return
+        return 0
     warnings.warn("Failed to upgrade aider.")
+    return rtn
 
 
 def get_model(
@@ -376,4 +412,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    sys.argv.append("--upgrade")
     sys.exit(main())

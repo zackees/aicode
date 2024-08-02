@@ -141,3 +141,4 @@ dmypy.json
 .aider*
 !.aider.conf.yml
 !.aiderignore
+src/aicode/aider-install
