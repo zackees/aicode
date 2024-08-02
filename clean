@@ -1,9 +1,6 @@
 #!/bin/bash
 set -x
-# remove all *.pyc files
-find . -name "*.pyc" -exec rm -rf {} \;
-# remove all *.egg files
-find . -name "*.egg" -exec rm -rf {} \;
+rm -rf venv
 rm -rf build
 rm -rf dist
 rm -rf *.egg-info
@@ -14,4 +11,9 @@ rm -rf .pytest_cache
 rm -rf .mypy_cache
 rm -rf .coverage
 
-rm -rf venv
+
+# remove all *.pyc files
+find . -name "*.pyc" -exec rm -rf {} \;
+# remove all *.egg files
+find . -name "*.egg" -exec rm -rf {} \;
+

@@ -18,7 +18,6 @@ from aicode.openaicfg import create_or_load_config, save_config
 from aicode.util import aider_fetch_update_status
 
 CHAT_GPT = "openai/gpt-4o"
-HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 @dataclass
@@ -37,25 +36,9 @@ CLAUD3_MODELS = {"claude"}
 
 MODEL_CHOICES = list(MODELS.keys())
 
-CUSTOM_PATH = os.path.join(HERE, "aider-install")
-
-
-def _aider_env() -> dict[str, str]:
-    env = os.environ.copy()
-    env["PIPX_HOME"] = CUSTOM_PATH
-    env["PIPX_BIN_DIR"] = os.path.join(CUSTOM_PATH, "bin")
-    return env
-
 
 def install_aider_if_missing() -> None:
     # Set the custom bin path where you want aider to be installed
-
-    # Expand the user directory in case of tilde (~)
-    bin_path = os.path.join(CUSTOM_PATH, "bin")
-
-    # Ensure the custom bin path is included in the PATH environment variable
-    os.environ["PATH"] = os.environ["PATH"] + os.pathsep + bin_path
-
     # Check if aider is already installed
     if shutil.which("aider") is not None:
         return
@@ -68,8 +51,7 @@ def install_aider_if_missing() -> None:
 
     # Install aider using pipx in the custom bin path
     cmd = f'"{PYTHON_EXE}" -m pipx install aider-chat'
-    env = _aider_env()
-    completed_proc = subprocess.run(cmd, check=False, env=env, shell=True)
+    completed_proc = subprocess.run(cmd, check=False, shell=True)
     # Ensure installation was successful
     if completed_proc.returncode != 0:
         assert False, "Failed to install aider"
@@ -80,17 +62,10 @@ class CustomHelpParser(argparse.ArgumentParser):
     def print_help(self):
         # Call the default help message
         super().print_help()
-        # Add additional help from the tool you're wrapping
-        # print("\n Print aider --help:")
-
         aider_installed = shutil.which("aider") is not None
         if not aider_installed:
             print("aider is not installed, no more help available.")
             sys.exit(0)
-        # aider_config = os.path.exists(".aider.conf.yml")
-        # if not aider_config:
-        #     print("\naider config file not found, no more help available.")
-        #     sys.exit(1)
         print("\n\n############ aider --help ############")
         completed_proc = subprocess.run(
             ["aider", "--help"], check=False, capture_output=True
@@ -156,12 +131,9 @@ def cleanup() -> None:
 
 def upgrade_aider() -> int:
     print("Upgrading aider...")
-    env = _aider_env()
     # rtn = os.system("pipx upgrade aider-chat")
     PYTHON_EXE = sys.executable
-    rtn = subprocess.run(
-        f"{PYTHON_EXE} -m pip install --upgrade aider-chat", env=env
-    ).returncode
+    rtn = subprocess.run(f"{PYTHON_EXE} -m pip install --upgrade aider-chat").returncode
     if rtn == 0:
         print("Upgrade successful.")
         return 0
@@ -172,9 +144,7 @@ def upgrade_aider() -> int:
     print("Upgrading pipx...")
     PYTHON_EXE = sys.executable
     # rtn = os.system(f'"{PYTHON_EXE}" -m pip install --upgrade pipx')
-    rtn = subprocess.run(
-        f"{PYTHON_EXE} -m pip install --upgrade pipx", env=env
-    ).returncode
+    rtn = subprocess.run(f"{PYTHON_EXE} -m pip install --upgrade pipx").returncode
     if rtn != 0:
         warnings.warn("Failed to upgrade pipx.")
         return rtn
@@ -412,5 +382,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.argv.append("--upgrade")
     sys.exit(main())
