@@ -236,8 +236,7 @@ def find_path_to_git_directory(cwd: Path) -> Path:
     raise FileNotFoundError("No git directory found")
 
 
-def cli() -> int:
-    # does .git directory exist?
+def check_gitdirectory() -> None:
     try:
         cwd = Path.cwd()
         path = find_path_to_git_directory(cwd=cwd)
@@ -245,10 +244,12 @@ def cli() -> int:
         os.chdir(str(path))
     except FileNotFoundError:
         print(f"There is no git directory at or above the current directory at {cwd}")
-        return 1
+        sys.exit(1)
+
+
+def cli() -> int:
+    # does .git directory exist?
     args, unknown_args = parse_args()
-    check_gitignore()
-    check_aiderignore()
     config = create_or_load_config()
     if args.upgrade:
         aider_upgrade()
@@ -265,6 +266,9 @@ def cli() -> int:
         config["anthropic_key"] = args.set_anthropic_key
         save_config(config)
         config = create_or_load_config()
+    check_gitdirectory()
+    check_gitignore()
+    check_aiderignore()
     anthropic_key = config.get("anthropic_key")
     openai_key = config.get("openai_key")
     model = get_model(args, anthropic_key, openai_key)
