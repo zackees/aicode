@@ -5,7 +5,7 @@ from appdirs import user_config_dir  # type: ignore
 
 
 def get_config_path() -> str:
-    env_path = user_config_dir("zcmds", "zcmds", roaming=True)
+    env_path = user_config_dir("aicode", roaming=True)
     config_file = os.path.join(env_path, "openai.json")
     return config_file
 
