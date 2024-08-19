@@ -3,7 +3,6 @@
 import argparse
 import atexit
 import os
-import shutil
 import subprocess
 import sys
 import time
@@ -13,10 +12,16 @@ from pathlib import Path
 from threading import Thread
 from typing import Optional, Tuple, Union
 
+from aicode.aider_control import (
+    aider_fetch_update_status,
+    aider_install,
+    aider_install_path,
+    aider_installed,
+    aider_run,
+    aider_upgrade,
+)
 from aicode.aider_update_result import AiderUpdateResult
-from aicode.install_aider import install_aider, upgrade_aider
 from aicode.openaicfg import create_or_load_config, save_config
-from aicode.util import aider_fetch_update_status
 
 CHAT_GPT = "openai/gpt-4o"
 
@@ -38,19 +43,19 @@ CLAUD3_MODELS = {"claude"}
 MODEL_CHOICES = list(MODELS.keys())
 
 
-def install_aider_if_missing() -> None:
+def aider_install_if_missing() -> None:
     # Set the custom bin path where you want aider to be installed
     # Check if aider is already installed
-    if shutil.which("aider") is not None:
+    if aider_installed():
         return
-    install_aider()
+    aider_install()
 
 
 class CustomHelpParser(argparse.ArgumentParser):
     def print_help(self):
         # Call the default help message
         super().print_help()
-        aider_installed = shutil.which("aider") is not None
+        aider_installed = aider_install()
         if not aider_installed:
             print("aider is not installed, no more help available.")
             sys.exit(0)
@@ -246,7 +251,7 @@ def cli() -> int:
     check_aiderignore()
     config = create_or_load_config()
     if args.upgrade:
-        upgrade_aider()
+        aider_upgrade()
         config["aider_update_info"] = {}  # Purge stale update info
         save_config(config)
         return 0
@@ -263,7 +268,7 @@ def cli() -> int:
     anthropic_key = config.get("anthropic_key")
     openai_key = config.get("openai_key")
     model = get_model(args, anthropic_key, openai_key)
-    install_aider_if_missing()
+    aider_install_if_missing()
     is_anthropic_model = model in CLAUD3_MODELS
     if is_anthropic_model:
         if anthropic_key is None:
@@ -314,13 +319,14 @@ def cli() -> int:
     update_thread.daemon = True
     update_thread.start()
 
-    rtn = subprocess.call(cmd_list)
+    # rtn = subprocess.call(cmd_list)
+    rtn = aider_run(cmd_list).returncode
     if args.keep:
         return rtn
     atexit.register(cleanup)
     if rtn != 0:
         # debug by showing where the aider executable is
-        aider_path = shutil.which("aider")
+        aider_path = aider_install_path()
         if aider_path is not None:
             print("aider executable found at", aider_path)
         else:

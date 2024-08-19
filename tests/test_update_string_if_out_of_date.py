@@ -4,8 +4,8 @@ Unit test file.
 
 import unittest
 
-from aicode.main import install_aider_if_missing
-from aicode.util import AiderUpdateResult, aider_fetch_update_status
+from aicode.aider_control import AiderUpdateResult, aider_fetch_update_status
+from aicode.main import aider_install_if_missing
 
 
 class FetchUpdateStringIfOutOfDateTester(unittest.TestCase):
@@ -13,7 +13,7 @@ class FetchUpdateStringIfOutOfDateTester(unittest.TestCase):
 
     def test_weird_version(self) -> None:
         """Tests we can extract strings like '0.40.7-dev'."""
-        install_aider_if_missing()
+        aider_install_if_missing()
         update_status = aider_fetch_update_status()
         self.assertIsInstance(update_status, AiderUpdateResult)
         self.assertIsInstance(update_status.latest_version, str)
