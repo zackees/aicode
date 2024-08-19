@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.1 - Buf fix for isolated-environment by using `shell=True`.
   * 1.2.0 - Aider is now installed with `isolated-environment` instead of `pipx` for better isolation. We now use `keyring` to securely store your api keys.
   * 1.1.8 - Custom path now set for pipx, should fix most pipx issues.
   * 1.1.7 - Version detection fixed now that the api has been made much better.
