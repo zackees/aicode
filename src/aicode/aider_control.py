@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 from isolated_environment import isolated_environment, isolated_environment_run
@@ -49,6 +50,8 @@ def aider_run(cmd_list: list[str], **process_args) -> subprocess.CompletedProces
         env_path=HERE / "aider-install",
         requirements=REQUIREMENTS,
         cmd_list=cmd_list,
+        shell=True,
+        full_isolation=True,
         **process_args,
     )
     return cp
@@ -65,24 +68,15 @@ def aider_install() -> None:
 
 
 def aider_installed() -> bool:
-    cp = isolated_environment_run(
-        env_path=HERE / "aider-install",
-        requirements=REQUIREMENTS,
-        cmd_list=["aider", "--version"],
-        capture_output=True,
-    )
+    cp = aider_run(["aider", "--version"], capture_output=True)
     return cp.returncode == 0
 
 
 def aider_install_path() -> str | None:
+    which = "which" if not sys.platform == "win32" else "where"
     if not aider_installed():
         return None
-    cp = isolated_environment_run(
-        env_path=HERE / "aider-install",
-        requirements=REQUIREMENTS,
-        cmd_list=["which", "aider"],
-        capture_output=True,
-    )
+    cp = aider_run([which, "aider"], check=True, capture_output=True)
     return cp.stdout.strip()
 
 
