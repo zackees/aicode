@@ -11,7 +11,7 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-    "isolated-environment>=2.0.1",
+    "isolated-environment>=2.0.2",
     "appdirs",
     "keyring"
 ]
