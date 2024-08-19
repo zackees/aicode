@@ -14,7 +14,7 @@ from threading import Thread
 from typing import Optional, Tuple, Union
 
 from aicode.aider_update_result import AiderUpdateResult
-from aicode.install_aider import install_aider
+from aicode.install_aider import install_aider, upgrade_aider
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.util import aider_fetch_update_status
 
@@ -115,33 +115,6 @@ def cleanup() -> None:
                 os.remove(file)
             except OSError:
                 warnings.warn(f"Failed to remove {file}")
-
-
-def upgrade_aider() -> int:
-    print("Upgrading aider...")
-    # rtn = os.system("pipx upgrade aider-chat")
-    PYTHON_EXE = sys.executable
-    rtn = subprocess.run(f"{PYTHON_EXE} -m pip install --upgrade aider-chat").returncode
-    if rtn == 0:
-        print("Upgrade successful.")
-        return 0
-    warnings.warn("Upgrade failed, pipx may be out of date.")
-    yes = input("Would you like to try upgrading pipx? [y/N] ")
-    if yes.lower() != "y":
-        return 0
-    print("Upgrading pipx...")
-    PYTHON_EXE = sys.executable
-    # rtn = os.system(f'"{PYTHON_EXE}" -m pip install --upgrade pipx')
-    rtn = subprocess.run(f"{PYTHON_EXE} -m pip install --upgrade pipx").returncode
-    if rtn != 0:
-        warnings.warn("Failed to upgrade pipx.")
-        return rtn
-    rtn = upgrade_aider()
-    if rtn == 0:
-        print("Reinstall successful.")
-        return 0
-    warnings.warn("Failed to upgrade aider.")
-    return rtn
 
 
 def get_model(
