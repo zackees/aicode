@@ -8,6 +8,7 @@ from aicode.aider_update_result import AiderUpdateResult
 from aicode.util import extract_version_string
 
 HERE = Path(__file__).parent
+AIDER_INSTALL_PATH = HERE / "aider-install"
 
 REQUIREMENTS = [
     "aider-chat[playwright]",
@@ -47,7 +48,7 @@ def aider_fetch_update_status() -> AiderUpdateResult:
 def aider_run(cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
     cp = isolated_environment_run(
-        env_path=HERE / "aider-install",
+        env_path=AIDER_INSTALL_PATH,
         requirements=REQUIREMENTS,
         cmd_list=cmd_list,
         shell=True,
@@ -63,7 +64,7 @@ def aider_install() -> None:
     print("Installing aider...")
     # Install aider using isolated_environment
     isolated_environment(
-        env_path=HERE / "aider-install", requirements=REQUIREMENTS, full_isolation=True
+        env_path=AIDER_INSTALL_PATH, requirements=REQUIREMENTS, full_isolation=True
     )
 
 
@@ -88,7 +89,7 @@ def aider_upgrade() -> int:
         return 0
 
     cp = isolated_environment_run(
-        env_path=HERE / "aider-install",
+        env_path=AIDER_INSTALL_PATH,
         requirements=REQUIREMENTS,
         cmd_list=["pip", "install", "--upgrade", "aider-chat[playwright]"],
         check=False,
