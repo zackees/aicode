@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.3 - Fixes a win32 bug related to `isolated-environment`
   * 1.2.2 - Propagate fixes from `isolated-environment` to fix Mac/Linux
   * 1.2.1 - Buf fix for isolated-environment by using `shell=True`.
   * 1.2.0 - Aider is now installed with `isolated-environment` instead of `pipx` for better isolation. We now use `keyring` to securely store your api keys.
