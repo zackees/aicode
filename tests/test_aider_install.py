@@ -15,9 +15,11 @@ class ExtractVersionStringTester(unittest.TestCase):
 
     def test_install(self) -> None:
         """Tests we can extract strings like '0.40.7-dev'."""
-        with TemporaryDirectory() as temp_dir:
+        with TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
             aider_install(Path(temp_dir))
-            cp: subprocess.CompletedProcess = aider_run(["aider", "--help"])
+            cp: subprocess.CompletedProcess = aider_run(
+                ["aider", "--help"], path=Path(temp_dir)
+            )
             self.assertEqual(0, cp.returncode)
 
 

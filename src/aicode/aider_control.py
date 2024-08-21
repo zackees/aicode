@@ -9,6 +9,11 @@ HERE = Path(__file__).parent
 AIDER_INSTALL_PATH = HERE / "aider-install"
 
 REQUIREMENTS = ["aider-chat[playwright]", "uv"]
+ACTIVATE_SCRIPT = (
+    '. .venv/bin/activate && "$@"'
+    if sys.platform != "win32"
+    else ".venv\\Scripts\\activate.bat && %*\n"
+)
 
 
 def aider_fetch_update_status() -> AiderUpdateResult:
@@ -47,31 +52,20 @@ def aider_installed(path: Path | None = None) -> bool:
 
 
 def aider_run(
-    cmd_list: list[str], path: Path | None = None, **process_args
+    cmd_list: list[str], path: Path = None, **process_args
 ) -> subprocess.CompletedProcess:
-    """Runs the command using the isolated environment."""
     path = path or AIDER_INSTALL_PATH
+    """Runs the command using the isolated environment."""
     if not aider_installed(path):
         aider_install(path)
-    cmd_list = get_activated_environment_cmd_list() + cmd_list
-    # cmd_str = subprocess.list2cmdline(cmd_list)
-    cp = subprocess.run(cmd_list, cwd=str(path), shell=True, **process_args)
-    return cp
-
-
-def get_activated_environment_cmd_list() -> list[str]:
-    cmd_list = []
+    activate_script_path = path / "activate_script"
     if sys.platform == "win32":
-        cmd_list.append(".venv\\Scripts\\activate.bat")
-    elif sys.platform == "darwin":
-        cmd_list.append(".")
-        cmd_list.append(".venv/bin/activate")
-    else:
-        # linux
-        cmd_list.append(".")
-        cmd_list.append(".venv/bin/activate")
-    cmd_list.append("&&")
-    return cmd_list
+        activate_script_path = path / "activate_script.bat"
+    full_cmd = [str(activate_script_path)] + cmd_list
+    assert activate_script_path.exists(), f"{activate_script_path} does not exist"
+    cmd = subprocess.list2cmdline(full_cmd)
+    cp = subprocess.run(cmd, cwd=str(path), shell=True, **process_args)
+    return cp
 
 
 def aider_install(path: Path | None = None) -> None:
@@ -86,16 +80,23 @@ def aider_install(path: Path | None = None) -> None:
     subprocess.run(["uv", "venv"], cwd=str(path), check=True)
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
-    cmd_list = get_activated_environment_cmd_list()
-    cmd_list.extend(["uv", "pip", "install", "-r", "requirements.txt"])
-    subprocess.run(cmd_list, cwd=str(path), check=True)
-    if sys.platform not in ["win32", "darwin"]:
-        # linux
-        subprocess.run(
-            ["chmod", "+x", str(Path(".venv") / "bin" / "activate")],
-            cwd=str(path),
-            check=True,
-        )
+    activate_script_path = path / "activate_script"
+    if sys.platform == "win32":
+        activate_script_path = path / "activate_script.bat"
+    with open(activate_script_path, "w") as f:
+        f.write(ACTIVATE_SCRIPT)
+    if sys.platform != "win32":
+        activate_script_path.chmod(
+            activate_script_path.stat().st_mode | 0o111
+        )  # Make executable
+
+    subprocess.run(
+        f"{activate_script_path} uv pip install -r requirements.txt",
+        cwd=str(path),
+        shell=True,
+        check=True,
+    )
+
     # add a file to indicate that the installation was successful
     (path / "installed").touch()
 
@@ -114,5 +115,5 @@ def aider_upgrade() -> int:
     if not aider_installed():
         aider_install()
         return 0
-    cp = aider_run(["aider", "--upgrade"], check=True)
+    cp = aider_run(["aider", "--upgrade"], check=True, path=AIDER_INSTALL_PATH)
     return cp.returncode
