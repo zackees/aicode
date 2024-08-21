@@ -29,4 +29,5 @@ jobs:
         python -m pip install pytest
     - name: Run Tests
       run: |
+        chmod -R 777 .
         pytest tests
