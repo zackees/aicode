@@ -90,7 +90,7 @@ def aider_install(path: Path | None = None) -> None:
     if sys.platform not in ["win32", "darwin"]:
         # linux
         subprocess.run(
-            ["chmod", "+x", str(path / "bin" / "activate")], cwd=str(path), check=True
+            ["chmod", "777", str(path / "bin" / "activate")], cwd=str(path), check=True
         )
     # add a file to indicate that the installation was successful
     (path / "installed").touch()
