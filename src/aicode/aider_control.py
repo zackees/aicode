@@ -54,7 +54,7 @@ def aider_run(
     if not aider_installed(path):
         aider_install(path)
     cmd_list = get_activated_environment_cmd_list() + cmd_list
-    cp = subprocess.run(cmd_list, cwd=str(path), **process_args)
+    cp = subprocess.run(cmd_list, cwd=str(path), shell=True, **process_args)
     return cp
 
 
