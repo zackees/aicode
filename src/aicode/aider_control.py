@@ -86,7 +86,7 @@ def aider_install() -> None:
     subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), check=True)
     if sys.platform not in ["win32", "darwin"]:
         # linux
-        subprocess.run(["chmod", "+x", str(AIDER_INSTALL_PATH / "bin" / "activate")], cwd=str(AIDER_INSTALL_PATH), check=True)
+        subprocess.run(["chmod", "+x", str(AIDER_INSTALL_PATH / "bin" / "activate")], cwd=str(AIDER_INSTALL_PATH), check=True, shell=True)
     # add a file to indicate that the installation was successful
     (AIDER_INSTALL_PATH / "installed").touch()
 
