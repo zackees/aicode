@@ -53,9 +53,7 @@ def aider_run(
     path = path or AIDER_INSTALL_PATH
     if not aider_installed(path):
         aider_install(path)
-    # $ uv run example.py
-    cmd_list = get_activated_environment_cmd_list()
-    cmd_list.extend(["aider", "--just-check-update"])
+    cmd_list = get_activated_environment_cmd_list() + cmd_list
     cp = subprocess.run(cmd_list, cwd=str(path), **process_args)
     return cp
 

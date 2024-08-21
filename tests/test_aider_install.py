@@ -2,6 +2,7 @@
 Unit test file.
 """
 
+import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -16,7 +17,8 @@ class ExtractVersionStringTester(unittest.TestCase):
         """Tests we can extract strings like '0.40.7-dev'."""
         with TemporaryDirectory() as temp_dir:
             aider_install(Path(temp_dir))
-            aider_run(["aider", "--help"])
+            cp: subprocess.CompletedProcess = aider_run(["aider", "--help"])
+            self.assertEqual(0, cp.returncode)
 
 
 if __name__ == "__main__":
