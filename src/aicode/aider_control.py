@@ -41,18 +41,22 @@ def aider_fetch_update_status() -> AiderUpdateResult:
     return out
 
 
-def aider_installed() -> bool:
-    return (AIDER_INSTALL_PATH / "installed").exists()
+def aider_installed(path: Path | None = None) -> bool:
+    path = path or AIDER_INSTALL_PATH
+    return (path / "installed").exists()
 
 
-def aider_run(cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
+def aider_run(
+    cmd_list: list[str], path: Path | None = None, **process_args
+) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
-    if not aider_installed():
-        aider_install()
+    path = path or AIDER_INSTALL_PATH
+    if not aider_installed(path):
+        aider_install(path)
     # $ uv run example.py
     cmd_list = get_activated_environment_cmd_list()
     cmd_list.extend(["aider", "--just-check-update"])
-    cp = subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), shell=True, **process_args)
+    cp = subprocess.run(cmd_list, cwd=str(path), **process_args)
     return cp
 
 
@@ -70,25 +74,28 @@ def get_activated_environment_cmd_list() -> list[str]:
     return cmd_list
 
 
-def aider_install() -> None:
+def aider_install(path: Path | None = None) -> None:
     """Uses isolated_environment to install aider."""
-    if aider_installed():
+    path = path or AIDER_INSTALL_PATH
+    if aider_installed(path):
         return
     # Print installing message
     print("Installing aider...")
     # Install aider using isolated_environment
-    AIDER_INSTALL_PATH.mkdir(exist_ok=True)
-    subprocess.run(["uv", "venv"], cwd=str(AIDER_INSTALL_PATH), check=True)
-    requirements = AIDER_INSTALL_PATH / "requirements.txt"
+    path.mkdir(exist_ok=True)
+    subprocess.run(["uv", "venv"], cwd=str(path), check=True)
+    requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
     cmd_list = get_activated_environment_cmd_list()
     cmd_list.extend(["uv", "pip", "install", "-r", "requirements.txt"])
-    subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), check=True)
+    subprocess.run(cmd_list, cwd=str(path), check=True)
     if sys.platform not in ["win32", "darwin"]:
         # linux
-        subprocess.run(["chmod", "+x", str(AIDER_INSTALL_PATH / "bin" / "activate")], cwd=str(AIDER_INSTALL_PATH), check=True, shell=True)
+        subprocess.run(
+            ["chmod", "+x", str(path / "bin" / "activate")], cwd=str(path), check=True
+        )
     # add a file to indicate that the installation was successful
-    (AIDER_INSTALL_PATH / "installed").touch()
+    (path / "installed").touch()
 
 
 def aider_install_path() -> str | None:
