@@ -52,7 +52,7 @@ def aider_installed(path: Path | None = None) -> bool:
 
 
 def aider_run(
-    cmd_list: list[str], path: Path = None, **process_args
+    cmd_list: list[str], path: Path | None = None, **process_args
 ) -> subprocess.CompletedProcess:
     path = path or AIDER_INSTALL_PATH
     """Runs the command using the isolated environment."""
