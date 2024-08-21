@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.7 - `aicode --upgrade` has been fixed to work with `uv` package upgrades.
   * 1.2.6 - Re-rooting trick fails for mac/linux, only apply it for win32
   * 1.2.5 - Cwd directory is inserted so aider-chat backend is invoked from the current command line.
   * 1.2.4 - Switch isolated environment to an ad-hoc usage of `uv`. Much faster and better!
