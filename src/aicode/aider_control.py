@@ -52,7 +52,7 @@ def aider_run(cmd_list: list[str], **process_args) -> subprocess.CompletedProces
     # $ uv run example.py
     cmd_list = get_activated_environment_cmd_list()
     cmd_list.extend(["aider", "--just-check-update"])
-    cp = subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), **process_args)
+    cp = subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), shell=True, **process_args)
     return cp
 
 
