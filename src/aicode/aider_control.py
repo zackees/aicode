@@ -114,11 +114,24 @@ def aider_install_path() -> str | None:
     return cp.stdout.strip()
 
 
-def aider_upgrade() -> int:
+def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
+    path = path or AIDER_INSTALL_PATH
 
     if not aider_installed():
         aider_install()
         return 0
-    cp = aider_run(["aider", "--upgrade"], check=True, path=AIDER_INSTALL_PATH)
-    return cp.returncode
+
+    requirements = path / "requirements.txt"
+    upgrade_cmd = ["uv", "pip", "install", "--upgrade", "-r", str(requirements)]
+
+    try:
+        cp = aider_run(upgrade_cmd, check=True, path=path)
+        if cp.returncode != 0:
+            print(f"Error upgrading aider: {cp.returncode}")
+            return cp.returncode
+        print("Aider upgraded successfully.")
+        return 0
+    except subprocess.CalledProcessError as e:
+        print(f"Error upgrading aider: {e}")
+        return e.returncode
