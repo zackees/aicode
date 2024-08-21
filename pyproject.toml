@@ -11,9 +11,9 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-    "isolated-environment>=2.0.3",
     "appdirs",
-    "keyring"
+    "keyring",
+    "uv"
 ]
 # Change this with the version number bump.
 version = "1.2.3"
@@ -44,6 +44,9 @@ profile = "black"
 [tool.mypy]
 ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
+
+[tool.uv.workspace]
+members = ["src/aicode/aider-install/aider"]
 
 [project.scripts]
 aicode = "aicode.main:main"

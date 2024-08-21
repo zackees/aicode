@@ -55,8 +55,8 @@ class CustomHelpParser(argparse.ArgumentParser):
     def print_help(self):
         # Call the default help message
         super().print_help()
-        aider_installed = aider_install()
-        if not aider_installed:
+        is_installed = aider_installed()
+        if not is_installed:
             print("aider is not installed, no more help available.")
             sys.exit(0)
         print("\n\n############ aider --help ############")
@@ -353,4 +353,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    sys.argv.append("--help")
     sys.exit(main())

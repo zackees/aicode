@@ -2,17 +2,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from isolated_environment import isolated_environment, isolated_environment_run
-
 from aicode.aider_update_result import AiderUpdateResult
 from aicode.util import extract_version_string
 
 HERE = Path(__file__).parent
 AIDER_INSTALL_PATH = HERE / "aider-install"
 
-REQUIREMENTS = [
-    "aider-chat[playwright]",
-]
+REQUIREMENTS = ["aider-chat[playwright]", "uv"]
 
 
 def aider_fetch_update_status() -> AiderUpdateResult:
@@ -45,32 +41,47 @@ def aider_fetch_update_status() -> AiderUpdateResult:
     return out
 
 
+def aider_installed() -> bool:
+    return (AIDER_INSTALL_PATH / "installed").exists()
+
+
 def aider_run(cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
-    cp = isolated_environment_run(
-        env_path=AIDER_INSTALL_PATH,
-        requirements=REQUIREMENTS,
-        cmd_list=cmd_list,
-        shell=True,
-        full_isolation=True,
-        **process_args,
-    )
+    if not aider_installed():
+        aider_install()
+    # $ uv run example.py
+    cmd_list = get_activated_environment_cmd_list()
+    cmd_list.extend(["aider", "--just-check-update"])
+    cp = subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), **process_args)
     return cp
+
+
+def get_activated_environment_cmd_list() -> list[str]:
+    cmd_list = []
+    if sys.platform == "win32":
+        cmd_list.append(".venv\\Scripts\\activate.bat")
+    else:
+        cmd_list.append(".venv/bin/activate")
+    cmd_list.append("&&")
+    return cmd_list
 
 
 def aider_install() -> None:
     """Uses isolated_environment to install aider."""
+    if aider_installed():
+        return
     # Print installing message
     print("Installing aider...")
     # Install aider using isolated_environment
-    isolated_environment(
-        env_path=AIDER_INSTALL_PATH, requirements=REQUIREMENTS, full_isolation=True
-    )
-
-
-def aider_installed() -> bool:
-    cp = aider_run(["aider", "--version"], capture_output=True)
-    return cp.returncode == 0
+    AIDER_INSTALL_PATH.mkdir(exist_ok=True)
+    subprocess.run(["uv", "venv"], cwd=str(AIDER_INSTALL_PATH), check=True)
+    requirements = AIDER_INSTALL_PATH / "requirements.txt"
+    requirements.write_text("\n".join(REQUIREMENTS))
+    cmd_list = get_activated_environment_cmd_list()
+    cmd_list.extend(["uv", "pip", "install", "-r", "requirements.txt"])
+    subprocess.run(cmd_list, cwd=str(AIDER_INSTALL_PATH), check=True)
+    # add a file to indicate that the installation was successful
+    (AIDER_INSTALL_PATH / "installed").touch()
 
 
 def aider_install_path() -> str | None:
@@ -87,11 +98,5 @@ def aider_upgrade() -> int:
     if not aider_installed():
         aider_install()
         return 0
-
-    cp = isolated_environment_run(
-        env_path=AIDER_INSTALL_PATH,
-        requirements=REQUIREMENTS,
-        cmd_list=["pip", "install", "--upgrade", "aider-chat[playwright]"],
-        check=False,
-    )
+    cp = aider_run(["aider", "--upgrade"], check=True)
     return cp.returncode
