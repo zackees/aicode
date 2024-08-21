@@ -61,6 +61,9 @@ def aider_run(
     activate_script_path = path / "activate_script"
     if sys.platform == "win32":
         activate_script_path = path / "activate_script.bat"
+    # insert command to go to the cwd
+    cwd = Path.cwd()
+    cmd_list = ["cd", str(cwd), "&&"] + cmd_list
     full_cmd = [str(activate_script_path)] + cmd_list
     assert activate_script_path.exists(), f"{activate_script_path} does not exist"
     cmd = subprocess.list2cmdline(full_cmd)

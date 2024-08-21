@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.5 - Cwd directory is inserted so aider-chat backend is invoked from the current command line.
   * 1.2.4 - Switch isolated environment to an ad-hoc usage of `uv`. Much faster and better!
   * 1.2.3 - Fixes a win32 bug related to `isolated-environment`
   * 1.2.2 - Propagate fixes from `isolated-environment` to fix Mac/Linux
