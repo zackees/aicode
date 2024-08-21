@@ -64,7 +64,8 @@ def get_activated_environment_cmd_list() -> list[str]:
         cmd_list.append(".venv/bin/activate")
     else:
         # linux
-        cmd_list.append(". .venv/bin/activate")
+        cmd_list.append(".")
+        cmd_list.append(".venv/bin/activate")
     cmd_list.append("&&")
     return cmd_list
 
