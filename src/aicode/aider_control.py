@@ -61,7 +61,7 @@ def get_activated_environment_cmd_list() -> list[str]:
     if sys.platform == "win32":
         cmd_list.append(".venv\\Scripts\\activate.bat")
     else:
-        cmd_list.append(".venv/bin/activate")
+        cmd_list.append("source .venv/bin/activate")
     cmd_list.append("&&")
     return cmd_list
 
