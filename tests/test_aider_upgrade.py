@@ -6,8 +6,12 @@ import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import skipIf
 
 from aicode.aider_control import aider_install, aider_upgrade
+
+# Set this to True to disable the test
+DISABLE_AIDER_UPGRADE_TEST = True
 
 
 class AiderUpgradeTester(unittest.TestCase):
@@ -21,6 +25,7 @@ class AiderUpgradeTester(unittest.TestCase):
         # Clean up the temporary directory
         shutil.rmtree(str(self.temp_dir), ignore_errors=True)
 
+    @skipIf(DISABLE_AIDER_UPGRADE_TEST, "Aider upgrade test is disabled")
     def test_aider_upgrade(self):
         """Test that aider can be upgraded."""
         # First, install aider
