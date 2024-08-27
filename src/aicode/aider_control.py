@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -8,12 +9,8 @@ from aicode.util import extract_version_string
 HERE = Path(__file__).parent
 AIDER_INSTALL_PATH = HERE / "aider-install"
 
-REQUIREMENTS = ["aider-chat[playwright]", "uv"]
-ACTIVATE_SCRIPT = (
-    '. .venv/bin/activate && "$@"'
-    if sys.platform != "win32"
-    else ".venv\\Scripts\\activate.bat && %*\n"
-)
+AIDER_CHAT = "aider-chat[playwright]"
+REQUIREMENTS = [AIDER_CHAT, "uv"]
 
 
 def aider_fetch_update_status() -> AiderUpdateResult:
@@ -58,18 +55,10 @@ def aider_run(
     """Runs the command using the isolated environment."""
     if not aider_installed(path):
         aider_install(path)
-    activate_script_path = path / "activate_script"
-    if sys.platform == "win32":
-        activate_script_path = path / "activate_script.bat"
-    # insert command to go to the cwd
-    if sys.platform == "win32":
-        # Re-rooting trick for windows
-        cwd = Path.cwd()
-        cmd_list = ["cd", str(cwd), "&&"] + cmd_list
-    full_cmd = [str(activate_script_path)] + cmd_list
-    assert activate_script_path.exists(), f"{activate_script_path} does not exist"
-    cmd = subprocess.list2cmdline(full_cmd)
-    cp = subprocess.run(cmd, cwd=str(path), shell=True, **process_args)
+    full_cmd = ["uv", "run"] + cmd_list
+    env = dict(os.environ)
+    env["VIRTUAL_ENV"] = str(path / ".venv")
+    cp = subprocess.run(full_cmd, env=env, shell=True, **process_args)
     return cp
 
 
@@ -85,23 +74,15 @@ def aider_install(path: Path | None = None) -> None:
     subprocess.run(["uv", "venv"], cwd=str(path), check=True)
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
-    activate_script_path = path / "activate_script"
-    if sys.platform == "win32":
-        activate_script_path = path / "activate_script.bat"
-    with open(activate_script_path, "w") as f:
-        f.write(ACTIVATE_SCRIPT)
-    if sys.platform != "win32":
-        activate_script_path.chmod(
-            activate_script_path.stat().st_mode | 0o111
-        )  # Make executable
-
+    env: dict = dict(os.environ)
+    env["VIRTUAL_ENV"] = str(path / ".venv")
     subprocess.run(
-        f"{activate_script_path} uv pip install -r requirements.txt",
+        "uv pip install -r requirements.txt",
         cwd=str(path),
+        env=env,
         shell=True,
         check=True,
     )
-
     # add a file to indicate that the installation was successful
     (path / "installed").touch()
 
@@ -117,13 +98,10 @@ def aider_install_path() -> str | None:
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
     path = path or AIDER_INSTALL_PATH
-
     if not aider_installed():
         aider_install()
         return 0
-
-    requirements = path / "requirements.txt"
-    upgrade_cmd = ["uv", "pip", "install", "--upgrade", "-r", str(requirements)]
+    upgrade_cmd = ["uv", "pip", "install", "--upgrade", AIDER_CHAT]
 
     try:
         cp = aider_run(upgrade_cmd, check=True, path=path)

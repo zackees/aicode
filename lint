@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-. ./activate.sh
+. ./activate
 echo Running ruff src
 ruff check --fix src --exclude src/aicode/aider-install
 echo Running ruff tests

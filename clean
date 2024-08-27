@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 rm -rf venv
+rm -rf .venv
 rm -rf src/aicode/aider-install
 rm -rf build
 rm -rf dist

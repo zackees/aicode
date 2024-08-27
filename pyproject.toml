@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "advanced-aicode"
 readme = "README.md"
 description = "Front End for Aider.chat which makes it super simple to use"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
