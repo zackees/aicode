@@ -13,10 +13,11 @@ classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
     "appdirs",
     "keyring",
-    "uv"
+    "uv",
+    "setuptools"
 ]
 # Change this with the version number bump.
-version = "1.2.9"
+version = "1.2.10"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
