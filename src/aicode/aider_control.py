@@ -48,6 +48,7 @@ def aider_installed(path: Path | None = None) -> bool:
     path = path or AIDER_INSTALL_PATH
     dst = path / "aider_trampoline.py"
     if not dst.exists():
+        path.mkdir(exist_ok=True)
         shutil.copy(HERE / "aider_trampoline.py", path / "aider_trampoline.py")
     return (path / "installed").exists()
 
