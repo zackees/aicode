@@ -64,7 +64,6 @@ def aider_run(
     full_cmd_str = subprocess.list2cmdline(full_cmd)
     env = dict(os.environ)
     # env["VIRTUAL_ENV"] = str(path / ".venv")
-    print(f"Running: {full_cmd_str}")
     cp = subprocess.run(full_cmd_str, cwd=path, env=env, shell=True, **process_args)
     return cp
 
@@ -78,7 +77,7 @@ def aider_install(path: Path | None = None) -> None:
     print("Installing aider...")
     # Install aider using isolated_environment
     path.mkdir(exist_ok=True)
-    subprocess.run(["uv", "venv", "--python", "3.11"], cwd=str(path), check=True)
+    subprocess.run(["uv", "venv"], cwd=str(path), check=True)
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
     env: dict = dict(os.environ)
