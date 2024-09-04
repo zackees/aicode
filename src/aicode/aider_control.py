@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -45,6 +46,9 @@ def aider_fetch_update_status() -> AiderUpdateResult:
 
 def aider_installed(path: Path | None = None) -> bool:
     path = path or AIDER_INSTALL_PATH
+    dst = path / "aider_trampoline.py"
+    if not dst.exists():
+        shutil.copy(HERE / "aider_trampoline.py", path / "aider_trampoline.py")
     return (path / "installed").exists()
 
 
@@ -55,10 +59,12 @@ def aider_run(
     """Runs the command using the isolated environment."""
     if not aider_installed(path):
         aider_install(path)
-    full_cmd = ["uv", "run"] + cmd_list
+    full_cmd = ["uv", "run", "aider_trampoline.py", os.getcwd()] + cmd_list
+    full_cmd_str = subprocess.list2cmdline(full_cmd)
     env = dict(os.environ)
-    env["VIRTUAL_ENV"] = str(path / ".venv")
-    cp = subprocess.run(full_cmd, env=env, shell=True, **process_args)
+    # env["VIRTUAL_ENV"] = str(path / ".venv")
+    print(f"Running: {full_cmd_str}")
+    cp = subprocess.run(full_cmd_str, cwd=path, env=env, shell=True, **process_args)
     return cp
 
 
@@ -71,7 +77,7 @@ def aider_install(path: Path | None = None) -> None:
     print("Installing aider...")
     # Install aider using isolated_environment
     path.mkdir(exist_ok=True)
-    subprocess.run(["uv", "venv"], cwd=str(path), check=True)
+    subprocess.run(["uv", "venv", "--python", "3.11"], cwd=str(path), check=True)
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
     env: dict = dict(os.environ)
@@ -83,6 +89,7 @@ def aider_install(path: Path | None = None) -> None:
         shell=True,
         check=True,
     )
+    # copy aider_control.py to the installation path
     # add a file to indicate that the installation was successful
     (path / "installed").touch()
 
