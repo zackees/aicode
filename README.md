@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.12 - Final fixes (I hope) in this cycle.
   * 1.2.11 - Fixes some issues with warnings being emitted.
   * 1.2.10 - Adds missing `setuptools` dependency that was causing a non fatal error.
   * 1.2.9 - Now uses trampoline to re-root the cwd when calling the program. Fixes Linux/MacOS.

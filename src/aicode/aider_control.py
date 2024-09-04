@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
+import warnings
 from pathlib import Path
 
 from aicode.aider_update_result import AiderUpdateResult
@@ -89,6 +90,16 @@ def aider_install(path: Path | None = None) -> None:
         shell=True,
         check=True,
     )
+
+    # delete this file.
+    # aider-install\Lib\site-packages\distutils-precedence.pth
+    problematic_file = path / "Lib" / "site-packages" / "distutils-precedence.pth"
+    if problematic_file.exists():
+        try:
+            problematic_file.unlink()
+        except Exception as e:
+            warnings.warn(f"Failed to delete {problematic_file}: {e}")
+
     # copy aider_control.py to the installation path
     # add a file to indicate that the installation was successful
     (path / "installed").touch()
