@@ -26,4 +26,4 @@ jobs:
         ./install
     - name: Run Tests
       run: |
-        aicode --help
+        . ./activate && aicode --help
