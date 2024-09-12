@@ -1,4 +1,4 @@
-name: MacOS_Run
+name: MacOS_Install
 
 on: [push]
 
@@ -10,7 +10,6 @@ jobs:
         python-version: [3.11]
         os: [macos-latest]
     steps:
-    - uses: 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
