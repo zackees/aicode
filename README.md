@@ -60,6 +60,7 @@ Happy CODING!
 
 # Releases
 
+  * 1.2.14 - Fixes wrong VIRTUAL ENV path.
   * 1.2.13 - Fixes KeyboardInterrupt exception in trampoline.
   * 1.2.12 - Final fixes (I hope) in this cycle.
   * 1.2.11 - Fixes some issues with warnings being emitted.

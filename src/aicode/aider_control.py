@@ -64,7 +64,7 @@ def aider_run(
     full_cmd = ["uv", "run", "aider_trampoline.py", os.getcwd()] + cmd_list
     full_cmd_str = subprocess.list2cmdline(full_cmd)
     env = dict(os.environ)
-    # env["VIRTUAL_ENV"] = str(path / ".venv")
+    env["VIRTUAL_ENV"] = str(path / ".venv")
     cp = subprocess.run(full_cmd_str, cwd=path, env=env, shell=True, **process_args)
     return cp
 
