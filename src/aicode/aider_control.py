@@ -6,10 +6,10 @@ import warnings
 from pathlib import Path
 
 from aicode.aider_update_result import AiderUpdateResult
+from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import extract_version_string
 
 HERE = Path(__file__).parent
-AIDER_INSTALL_PATH = HERE / "aider-install"
 
 AIDER_CHAT = "aider-chat[playwright]"
 REQUIREMENTS = [AIDER_CHAT, "uv"]
@@ -49,7 +49,7 @@ def aider_installed(path: Path | None = None) -> bool:
     path = path or AIDER_INSTALL_PATH
     dst = path / "aider_trampoline.py"
     if not dst.exists():
-        path.mkdir(exist_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
         shutil.copy(HERE / "aider_trampoline.py", path / "aider_trampoline.py")
     return (path / "installed").exists()
 
@@ -82,7 +82,7 @@ def aider_install(path: Path | None = None) -> None:
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
     env: dict = dict(os.environ)
-    env["VIRTUAL_ENV"] = str(path / "venv")
+    env["VIRTUAL_ENV"] = str(path / ".venv")
     subprocess.run(
         "uv pip install -r requirements.txt",
         cwd=str(path),
