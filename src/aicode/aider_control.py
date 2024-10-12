@@ -131,3 +131,18 @@ def aider_upgrade(path: Path | None = None) -> int:
     except subprocess.CalledProcessError as e:
         print(f"Error upgrading aider: {e}")
         return e.returncode
+
+
+def aider_purge(path: Path | None = None) -> int:
+    print("Purging aider...")
+    path = path or AIDER_INSTALL_PATH
+    if not aider_installed():
+        print("Aider is not installed.")
+        return 0
+    try:
+        shutil.rmtree(path)
+        print("Aider purged successfully.")
+        return 0
+    except Exception as e:
+        print(f"Error purging aider: {e}")
+        return 1

@@ -17,11 +17,13 @@ from aicode.aider_control import (
     aider_install,
     aider_install_path,
     aider_installed,
+    aider_purge,
     aider_run,
     aider_upgrade,
 )
 from aicode.aider_update_result import AiderUpdateResult
 from aicode.openaicfg import create_or_load_config, save_config
+from aicode.paths import AIDER_INSTALL_PATH
 
 CHAT_GPT = "openai/gpt-4o"
 
@@ -70,10 +72,12 @@ class CustomHelpParser(argparse.ArgumentParser):
 
 
 def parse_args() -> Tuple[argparse.Namespace, list]:
+    AIDER_INSTALL_PATH
     argparser = CustomHelpParser(
         usage=(
             "Ask OpenAI for help with code, uses aider-chat on the backend."
-            " Any args not listed here are assumed to be for aider and will be passed on to it."
+            " Any args not listed here are assumed to be for aider and will be passed on to it.\n"
+            f"The real aider install path will be located at {AIDER_INSTALL_PATH}"
         )
     )
     argparser.add_argument(
@@ -81,6 +85,14 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
     )  # Changed nargs to '*'
     argparser.add_argument("--set-key", help="Set OpenAI key")
     argparser.add_argument("--set-anthropic-key", help="Set Claude key")
+    argparser.add_argument(
+        "--open-aider-path",
+        action="store_true",
+        help="Opens the real path to aider if it's installed.",
+    )
+    argparser.add_argument(
+        "--purge", action="store_true", help="Purge aider installation"
+    )
     argparser.add_argument(
         "--upgrade", action="store_true", help="Upgrade aider using pipx"
     )
@@ -247,10 +259,36 @@ def check_gitdirectory() -> None:
         sys.exit(1)
 
 
+def _open_folder(path: Path) -> None:
+    if sys.platform == "win32":
+        os.startfile(path)
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
+
+
 def cli() -> int:
     # does .git directory exist?
     args, unknown_args = parse_args()
     config = create_or_load_config()
+    if args.open_aider_path:
+        print("Opening the real path to aider.")
+        path = AIDER_INSTALL_PATH
+        if path is not None:
+            print(path)
+            _open_folder(path)
+            return 0
+        else:
+            warnings.warn("aider executable not found")
+            return 1
+    if args.purge:
+        print("Purging aider installation")
+        aider_purge()
+        config["aider_update_info"] = {}
+        save_config(config)
+        return 0
+
     if args.upgrade:
         aider_upgrade()
         config["aider_update_info"] = {}  # Purge stale update info
