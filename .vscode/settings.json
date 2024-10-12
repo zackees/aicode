@@ -13,7 +13,7 @@
     },
     // adds activate virtualenv to terminal
     "terminal.integrated.env.windows": {
-        "VIRTUAL_ENV": "${workspaceFolder}/venv"
+        "VIRTUAL_ENV": "${workspaceFolder}/.venv"
     },
     "files.eol": "\n", // Unix
     "editor.tabSize": 4,
