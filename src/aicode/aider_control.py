@@ -82,7 +82,7 @@ def aider_install(path: Path | None = None) -> None:
     requirements = path / "requirements.txt"
     requirements.write_text("\n".join(REQUIREMENTS))
     env: dict = dict(os.environ)
-    env["VIRTUAL_ENV"] = str(path / ".venv")
+    env["VIRTUAL_ENV"] = str(path / "venv")
     subprocess.run(
         "uv pip install -r requirements.txt",
         cwd=str(path),
