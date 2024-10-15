@@ -8,6 +8,7 @@ import sys
 import time
 import warnings
 from dataclasses import dataclass
+from os.path import exists
 from pathlib import Path
 from threading import Thread
 from typing import Optional, Tuple, Union
@@ -63,10 +64,12 @@ class CustomHelpParser(argparse.ArgumentParser):
             sys.exit(0)
         print("\n\n############ aider --help ############")
         completed_proc = subprocess.run(
-            ["aider", "--help"], check=False, capture_output=True
+            ["aider", "--help"], check=False, capture_output=True, text=True
         )
-        stdout = completed_proc.stdout.decode("utf-8")
+        stdout = completed_proc.stdout
         print(stdout)
+        # flush print buffer
+        sys.stdout.flush()
         sys.exit(0)
         # make sure and return exit 0 on help message.
 
@@ -103,6 +106,11 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         "--auto-commit",
         "-a",
         action="store_true",
+    )
+    argparser.add_argument(
+        "--lint",
+        action="store_true",
+        help="Enable auto-linting",
     )
     model_group = argparser.add_mutually_exclusive_group()
 
@@ -217,6 +225,12 @@ def fix_paths(unknown_args: list) -> list:
         except Exception:
             out.append(arg)
     return out
+
+
+def get_lint_command() -> Optional[str]:
+    if exists("./lint"):
+        return "./lint"
+    return None
 
 
 def check_aiderignore() -> None:
@@ -353,6 +367,14 @@ def cli() -> int:
         cmd_list.append("--auto-commit")
     else:
         cmd_list.append("--no-auto-commit")
+    if args.lint:
+        lint_cmd = get_lint_command()
+        if lint_cmd:
+            cmd_list.extend(["--lint-cmd", lint_cmd])
+        else:
+            cmd_list.append("--auto-lint")
+    else:
+        cmd_list.append("--no-auto-lint")
     args.prompt = fix_paths(args.prompt)
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")

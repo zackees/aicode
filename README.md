@@ -59,7 +59,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 Happy CODING!
 
 # Releases
-
+  * 1.2.16 - Linting is disable by default
   * 1.2.15 - Aider is now installed in a side package. This means Aider won't be cleared when you uninstall `advanced-aicode` but should resolve the issue with OSX throwing exceptions for locked files. See `aicode --purge`
   * 1.2.14 - Fixes wrong VIRTUAL ENV path.
   * 1.2.13 - Fixes KeyboardInterrupt exception in trampoline.
