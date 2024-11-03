@@ -14,7 +14,8 @@ dependencies = [
     "appdirs",
     "keyring",
     "uv",
-    "setuptools"
+    "setuptools",
+    "keyrings.alt; platform_system == 'Linux'"
 ]
 # Change this with the version number bump.
 version = "1.2.16"
