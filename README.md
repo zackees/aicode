@@ -59,6 +59,8 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 Happy CODING!
 
 # Releases
+  * 2.0.0 - Implemented aider's new "architect" mode, which although is a small change in the code, does change how the product is used.
+            Disable this by using `--no-architect` to get the old behavior.
   * 1.2.16 - Linting is disable by default
   * 1.2.15 - Aider is now installed in a side package. This means Aider won't be cleared when you uninstall `advanced-aicode` but should resolve the issue with OSX throwing exceptions for locked files. See `aicode --purge`
   * 1.2.14 - Fixes wrong VIRTUAL ENV path.
