@@ -112,6 +112,11 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         action="store_true",
         help="Enable auto-linting",
     )
+    argparser.add_argument(
+        "--no-architect",
+        action="store_true",
+        help="Disable architect mode",
+    )
     model_group = argparser.add_mutually_exclusive_group()
 
     model_group.add_argument(
@@ -367,6 +372,10 @@ def cli() -> int:
         cmd_list.append("--auto-commit")
     else:
         cmd_list.append("--no-auto-commit")
+    # New feature to enable architect mode which seems to vastly
+    # improve the code editing capatility of the various ai coding models.
+    if not args.no_architect:
+        cmd_list.append("--architect")
     if args.lint:
         lint_cmd = get_lint_command()
         if lint_cmd:
@@ -382,6 +391,11 @@ def cli() -> int:
     update_thread = Thread(target=background_update_task, args=(config,))
     update_thread.daemon = True
     update_thread.start()
+
+    print("\n" + "=" * 80)
+    print("RUNNING COMMAND:")
+    print(" ".join(cmd_list))
+    print("=" * 80 + "\n")
 
     # rtn = subprocess.call(cmd_list)
     rtn = aider_run(cmd_list).returncode
