@@ -267,15 +267,15 @@ def find_path_to_git_directory(cwd: Path) -> Path:
     raise FileNotFoundError("No git directory found")
 
 
-def check_gitdirectory() -> None:
+def check_gitdirectory() -> bool:
     try:
         cwd = Path.cwd()
         path = find_path_to_git_directory(cwd=cwd)
         print("Found git directory at", path)
         os.chdir(str(path))
+        return True
     except FileNotFoundError:
-        print(f"There is no git directory at or above the current directory at {cwd}")
-        sys.exit(1)
+        return False
 
 
 def _open_folder(path: Path) -> None:
@@ -323,7 +323,19 @@ def cli() -> int:
         config["anthropic_key"] = args.set_anthropic_key
         save_config(config)
         config = create_or_load_config()
-    check_gitdirectory()
+    use_git = True
+    has_git = check_gitdirectory()
+    if not has_git:
+        answer = (
+            input("No git directory found, disable use of git? [y/n]: ")
+            .strip()[0:]
+            .lower()
+        )
+        if answer == "y" or answer == "":
+            use_git = False
+        else:
+            return 1
+
     check_gitignore()
     check_aiderignore()
     anthropic_key = config.get("anthropic_key")
@@ -384,6 +396,8 @@ def cli() -> int:
             cmd_list.append("--auto-lint")
     else:
         cmd_list.append("--no-auto-lint")
+    if not use_git:
+        cmd_list.append("--no-git")
     args.prompt = fix_paths(args.prompt)
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")

@@ -59,6 +59,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 Happy CODING!
 
 # Releases
+  * 2.0.1 - Implement disabling of git if a git directory can't be found.
   * 2.0.0 - Implemented aider's new "architect" mode, which although is a small change in the code, does change how the product is used.
             Disable this by using `--no-architect` to get the old behavior.
   * 1.2.16 - Linting is disable by default
