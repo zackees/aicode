@@ -28,6 +28,9 @@ from aicode.paths import AIDER_INSTALL_PATH
 
 CHAT_GPT = "openai/gpt-4o"
 
+# This will be at the root of the project, side to the .git directory
+AIDER_HISTORY = ".aider.chat.history.md"
+
 
 @dataclass
 class Model:
@@ -377,7 +380,19 @@ def cli() -> int:
     os.environ["AIDER_MODEL"] = model
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     # os.environ["OPENAI_API_KEY"] = openai_key
-    cmd_list = ["aider", "--no-check-update"]
+
+    if os.path.exists(AIDER_HISTORY):
+        answer = (
+            input("Chat history found. Would you like to restore it? [y/N]: ")
+            .strip()
+            .lower()
+        )
+        if answer in ("y", "yes"):
+            cmd_list = ["aider", "--no-check-update", "--restore-chat-history"]
+        else:
+            cmd_list = ["aider", "--no-check-update"]
+    else:
+        cmd_list = ["aider", "--no-check-update"]
     if is_anthropic_model:
         cmd_list.append("--sonnet")
     if args.auto_commit:
