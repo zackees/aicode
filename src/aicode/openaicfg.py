@@ -1,11 +1,18 @@
 import json
 import os
+from pathlib import Path
 
-import keyring
 from appdirs import user_config_dir  # type: ignore
+from semi_secret import SecretStorage  # type: ignore
 
-KEYRING_SERVICE_NAME = "aicode_openai"
-KEYRING_USERNAME = "config"
+# Create SHA1 hash of the storage key
+STORAGE_KEY = "aicode_openai_config"
+SALT = "aicode_salt"  # We should use a consistent salt for the storage
+
+STORAGE_PATH = Path(user_config_dir("advanced-aicode", roaming=True))
+
+# Initialize storage once
+_storage = SecretStorage(STORAGE_KEY, SALT, storage_path=STORAGE_PATH)
 
 
 def _get_config_path_legacy() -> str:
@@ -15,13 +22,13 @@ def _get_config_path_legacy() -> str:
 
 
 def save_config(config: dict) -> None:
-    """Save the config to the keyring."""
-    keyring.set_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME, json.dumps(config))
+    """Save the config using semi-secret storage."""
+    _storage.set("config", json.dumps(config))
 
 
-def load_from_keyring() -> dict:
-    """Load the config from the keyring."""
-    config_str = keyring.get_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME)
+def load_from_storage() -> dict:
+    """Load the config from semi-secret storage."""
+    config_str = _storage.get("config")
     if config_str:
         return json.loads(config_str)
     return {}
@@ -39,15 +46,15 @@ def _create_or_load_config_legacy() -> dict:
 
 
 def create_or_load_config() -> dict:
-    # First, try to load from keyring
-    config = load_from_keyring()
+    # First, try to load from semi-secret storage
+    config = load_from_storage()
     if config:
         return config
 
-    # If not in keyring, try to load from file (for backwards compatibility)
+    # If not in storage, try to load from file (for backwards compatibility)
     config = _create_or_load_config_legacy()
 
-    # If loaded from file, save to keyring for future use
+    # If loaded from file, save to storage for future use
     if config:
         save_config(config)
 
