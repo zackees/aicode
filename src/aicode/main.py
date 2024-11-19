@@ -41,7 +41,9 @@ class Model:
 
 MODELS = {
     "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
-    "claude": Model("claude", "The Claude model.", "sonnet"),
+    "claude": Model(
+        "claude", "The Claude model.", "anthropic/claude-3-5-sonnet-20241022"
+    ),
 }
 
 CLAUD3_MODELS = {"claude"}
@@ -258,15 +260,14 @@ def check_aiderignore() -> None:
 
 
 def find_path_to_git_directory(cwd: Path) -> Path:
-    path = cwd
-    prev_path = None
-    while path != Path("/"):
+    path = cwd.absolute()  # Make sure we have absolute path
+    while True:
         if (path / ".git").exists():
             return path
-        prev_path = path
-        path = path.parent
-        if path == prev_path:
+        parent = path.parent
+        if parent == path:  # We've hit the root
             break
+        path = parent
     raise FileNotFoundError("No git directory found")
 
 
