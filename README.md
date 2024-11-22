@@ -11,13 +11,13 @@ The most advanced ai coding tool on the planet.
 
 # About
 
-Okay well `aider.chat` is by far the BEST aicoding assistant on the planet. But `aicode`, a front end for
-`aider.chat` is EASIER TO USE! So use this whenever you can for Windows/Linux/MacOS.
-Think of `aicode` as `aider.chat` but on easy mode.
+## Aicode is actually aider.chat.
 
-One foot gun here is that `aider.chat` only works on files in a git repo. therefore you must be in a git repo
-for `aicode` to work. This is required because `aider.chat` will generate a repo map as part of the query.
+Aider.chat is the best AI pair programmer.
 
+Aicode is easier to use than aider.chat.
+
+Therefore aicode is the best AI programmer.
 
 ## Usage:
 
@@ -25,6 +25,11 @@ for `aicode` to work. This is required because `aider.chat` will generate a repo
 pip install advanced-aicode
 aicode
 ```
+
+Features
+  * `aicode` is easier to install. Like WAY easier.
+  * `aicode` will not f@ck up your global pip environment.
+  * `aicode` will notify you of updates, invoke it with`--update`
 
 ### Note
 
@@ -35,26 +40,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 # aicode is better than aider.chat in the following ways
 
 
-  * `aicode` is easier to install. Like WAY easier. It will tell you what you need to do to complete the installation, such
-    as setting the api key if none are detected.
-  * `aicode` will not f@ck up your global pip environment. We fix this by lazily installing `aider.chat` using `pipx`
-  * `aicode` will change the directory to a the project root containing a `.git` directory. `aider.chat` will just fail to run.
-  * `aicode` will default to NOT creating a git commit on every change. Instead it will
-    just raw dog it to your current repo. This simplifies usage because most of the time you will
-    only be editing one file and if you don't like the change you can just invoke undo on the file.
-    If you want to create a git commit on every change (so that you can use /undo)
-    then pass in `aicode -a`. This works better if you are editing multiple files and want and want
-    to step back in history, must most of the time it's better to just let `aicode` work on one file
-    at a time.
-  * `aicode` has the benefit of allowing easy upgrades to `aider.chat` from the command line using `aicode --update` which will
-    invoke `pipx` update on the backend.
-  * `aicode` will default to using `ChatGPT4-o` if it detects you have have an openapi key.
-  * `aicode` will save and insert the environmental variables on demand. `aider.chat` requires that you
-    insert these variables in your `~/.bashrc` file (linux) or the equivalent for Windows and MacOS.
-  * `aicode` will check for new versions in the background and inform you of an update on the NEXT run of
-    `aicode` and the command line you can use. This was a feature that `aider.chat` program actually implemented for this project.
-  * `aicode` will ask you to modify the `.gitignore` file so that you aren't uploading your f*cking chat
-    history to your repo by default.
+
 
 Happy CODING!
 
