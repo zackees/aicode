@@ -45,6 +45,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 Happy CODING!
 
 # Releases
+  * 2.0.5 - Watchmode now enabled by default.
   * 2.0.4 - New sonnet model anthropic/claude-3-5-sonnet-20241022 is now the default for claude mode.
   * 2.0.3 - Now using Semi secret instead of keyring, which encrypts the key at a secret location.
   * 2.0.2 - If there is chat history then aicode will ask if you want to restore it.
