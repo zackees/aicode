@@ -113,6 +113,11 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         action="store_true",
     )
     argparser.add_argument(
+        "--no-watch",
+        action="store_true",
+        help="Disable aider watch mode, which is enabled by default",
+    )
+    argparser.add_argument(
         "--lint",
         action="store_true",
         help="Enable auto-linting",
@@ -414,6 +419,12 @@ def cli() -> int:
         cmd_list.append("--no-auto-lint")
     if not use_git:
         cmd_list.append("--no-git")
+    if not args.no_watch:
+        update_info = aider_fetch_update_status()
+        if update_info is not None:
+            current_version = update_info.current_version
+            if current_version >= "0.70.0":
+                cmd_list.append("--watch")
     args.prompt = fix_paths(args.prompt)
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
