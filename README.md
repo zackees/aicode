@@ -30,17 +30,32 @@ Features
   * `aicode` is easier to install. Like WAY easier.
   * `aicode` will not f@ck up your global pip environment.
   * `aicode` will notify you of updates, invoke it with`--update`
+  * `aicode` will always turn on aider.chat's architect mode, which has significantly higher coding performance than non architect mode.
+  * `aicode` always invokes `--watch` mode, unless you shut it off via `--no-watch`
+
+### Watch mode
+
+Before watch mode, you had to manually add files to the chat terminal, then tell aider what you wanted to do. Now aider will watch the files and look for comments that container AI! in it, then follow the instructions.
+
+So for example, say you have this piece of code
+
+```python
+def list_files(root: Path) -> list[Path]:
+  pass
+```
+Now let's say you want to implement this function. You will fire up `aicode` and type in a comment that ends with `AI!` in it, which the ai will see.
+
+```python
+def list_files(root: Path) -> list[Path]"
+  pass # please implement this AI!
+```
+
+Aider will automatically see this and start editing the file!
 
 ### Note
 
 The package name is NOT the same as the command tool. The package is `advanced-aicode` and the tool is called `aicode`. Someone
 else grabbed package name `aicode` over a year ago and this is the best name I could come up with to get it into pypi.
-
-
-# aicode is better than aider.chat in the following ways
-
-
-
 
 Happy CODING!
 
