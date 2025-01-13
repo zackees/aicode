@@ -49,6 +49,7 @@ MODELS = {
 CLAUD3_MODELS = {"claude"}
 
 MODEL_CHOICES = list(MODELS.keys())
+_ENABLE_HISTORY_ASK = False
 
 
 def aider_install_if_missing() -> None:
@@ -387,7 +388,7 @@ def cli() -> int:
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     # os.environ["OPENAI_API_KEY"] = openai_key
 
-    if os.path.exists(AIDER_HISTORY):
+    if os.path.exists(AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
         answer = (
             input("Chat history found. Would you like to restore it? [y/N]: ")
             .strip()
