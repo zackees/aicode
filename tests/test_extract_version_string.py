@@ -34,6 +34,7 @@ class ExtractVersionStringTester(unittest.TestCase):
         self.assertFalse(a == b)
         self.assertTrue(a >= b)
         self.assertFalse(a <= b)
+        self.assertEqual(str(a), "0.40.7")
 
 
 if __name__ == "__main__":
