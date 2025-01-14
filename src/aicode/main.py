@@ -22,7 +22,7 @@ from aicode.aider_control import (
     aider_run,
     aider_upgrade,
 )
-from aicode.aider_update_result import AiderUpdateResult
+from aicode.aider_update_result import AiderUpdateResult, Version
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
 
@@ -427,9 +427,10 @@ def cli() -> int:
         cmd_list.append("--no-git")
     if not args.no_watch:
         update_info = aider_fetch_update_status()
+        current_version: Version | None = update_info.get_current_version()
         if update_info is not None:
-            current_version = update_info.current_version
-            if current_version >= "0.70.0":
+            min_version = Version("0.70.0")
+            if current_version >= min_version:
                 cmd_list.append("--watch")
     args.prompt = fix_paths(args.prompt)
     cmd_list += args.prompt + unknown_args

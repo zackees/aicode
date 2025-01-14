@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 echo Running ruff src
 uvx ruff check --fix src --exclude src/aicode/aider-install
 echo Running ruff tests
