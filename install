@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 # Check if UV is not found
 if ! command -v uv &> /dev/null; then
@@ -25,8 +26,8 @@ if [[ -f requirements.testing.txt ]]; then
 fi
 
 # If activate exists, delete it
-if [[ -f activate ]]; then
-  rm activate
+if [[ -f ./activate ]]; then
+  rm ./activate
 fi
 
 # If Windows, then symlink .venv/Scripts/activate to .venv/bin/activate
