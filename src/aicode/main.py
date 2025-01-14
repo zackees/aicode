@@ -44,6 +44,11 @@ MODELS = {
     "claude": Model(
         "claude", "The Claude model.", "anthropic/claude-3-5-sonnet-20241022"
     ),
+    "deepseek": Model(
+        "deepseek",
+        "The deepseek model.",
+        "deepseek",
+    ),
 }
 
 CLAUD3_MODELS = {"claude"}
