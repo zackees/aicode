@@ -21,6 +21,8 @@ pip install advanced-aicode
 aicode
 ```
 
+Why is this the best open source coding assistant? Because this is a front end for [aider.chat](https://aider.chat), but with all the sharp edges filed off and the defaults you want, included automatically.
+
 Features
   * `aicode` is easier to install. Like WAY easier.
   * `aicode` will not f@ck up your global pip environment.
