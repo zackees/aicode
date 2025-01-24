@@ -1,25 +1,19 @@
 # aicode
 
-Optimized and easy to use front-end for the most advanced AI coding tool on the planet: [aider.chat](https://aider.chat/)
-
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
 [![MacOS_Tests](../../actions/workflows/push_macos.yml/badge.svg)](../../actions/workflows/push_macos.yml)
 [![Ubuntu_Tests](../../actions/workflows/push_ubuntu.yml/badge.svg)](../../actions/workflows/push_ubuntu.yml)
 [![Win_Tests](../../actions/workflows/push_win.yml/badge.svg)](../../actions/workflows/push_win.yml)
 
+
+Optimized and easy to use front-end for the most advanced AI coding tool on the planet: [aider.chat](https://aider.chat/)
+
 ![image](https://github.com/user-attachments/assets/ddb746de-0a02-4867-b9da-2b2056eb5649)
 
 
 # About
 
-## Aicode is actually aider.chat.
-
-Aider.chat is the best AI pair programmer.
-
-Aicode is easier to use than aider.chat.
-
-Therefore aicode is the best AI programmer.
 
 ## Usage:
 
