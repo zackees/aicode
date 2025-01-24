@@ -15,7 +15,8 @@ Despite the lack of stars, this is the best coding assistant you can use.
     * Uses power defaults like `--watch` and `--architect`
 
 
-![image](https://github.com/user-attachments/assets/ddb746de-0a02-4867-b9da-2b2056eb5649)
+
+![406264279-ddb746de-0a02-4867-b9da-2b2056eb5649](https://github.com/user-attachments/assets/18b1c918-c0b8-43ba-9f24-24af9f31ca3a)
 
 
 # About
