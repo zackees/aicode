@@ -370,18 +370,7 @@ def cli() -> int:
         config["anthropic_key"] = args.set_anthropic_key
         save_config(config)
         config = create_or_load_config()
-    use_git = True
     has_git = check_gitdirectory()
-    if not has_git:
-        answer = (
-            input("No git directory found, disable use of git? [y/n]: ")
-            .strip()[0:]
-            .lower()
-        )
-        if answer == "y" or answer == "":
-            use_git = False
-        else:
-            return 1
 
     check_gitignore()
     check_aiderignore()
@@ -460,7 +449,7 @@ def cli() -> int:
             cmd_list.append("--auto-lint")
     else:
         cmd_list.append("--no-auto-lint")
-    if not use_git:
+    if not has_git:
         cmd_list.append("--no-git")
     if not args.no_watch:
         update_info = aider_fetch_update_status()
