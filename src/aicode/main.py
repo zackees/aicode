@@ -414,6 +414,8 @@ def cli() -> int:
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     # os.environ["OPENAI_API_KEY"] = openai_key
 
+    # C:\\Users\\niteris\\dev\\aicode\\.venv\\Scripts\\uv.EXE run --project C:\\Users\\niteris\\AppData\\Local\\aider-install\\aider\\.venv aider.chat --no-check-update --gui --sonnet --no-auto-commit --architect --no-auto-lint --watch
+
     use_gui = get_interface_mode(args)
 
     if os.path.exists(AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
@@ -427,7 +429,7 @@ def cli() -> int:
         else:
             cmd_list = ["aider", "--no-check-update"]
     else:
-        cmd_list = ["aider.chat" if use_gui else "aider", "--no-check-update"]
+        cmd_list = ["aider", "--no-check-update"]
 
     if use_gui:
         cmd_list.append("--gui")
@@ -501,5 +503,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.argv.append("--help")
     sys.exit(main())

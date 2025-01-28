@@ -1,18 +1,25 @@
-import os
 import shutil
 import subprocess
 import sys
-import warnings
 from pathlib import Path
+
+from iso_env import IsoEnv, IsoEnvArgs, Requirements
 
 from aicode.aider_update_result import AiderUpdateResult
 from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import extract_version_string
 
-HERE = Path(__file__).parent
-
 AIDER_CHAT = "aider-chat[playwright]"
-REQUIREMENTS = [AIDER_CHAT, "uv"]
+REQUIREMENTS = [AIDER_CHAT]
+
+
+def get_iso_env(path: Path) -> IsoEnv:
+    """Creates and returns an IsoEnv instance"""
+    args = IsoEnvArgs(
+        venv_path=path / ".venv",
+        build_info=Requirements(AIDER_CHAT, python_version=">=3.12"),
+    )
+    return IsoEnv(args)
 
 
 def aider_fetch_update_status() -> AiderUpdateResult:
@@ -47,62 +54,38 @@ def aider_fetch_update_status() -> AiderUpdateResult:
 
 def aider_installed(path: Path | None = None) -> bool:
     path = path or AIDER_INSTALL_PATH
-    dst = path / "aider_trampoline.py"
-    if not dst.exists():
-        path.mkdir(parents=True, exist_ok=True)
-        shutil.copy(HERE / "aider_trampoline.py", path / "aider_trampoline.py")
     return (path / "installed").exists()
 
 
 def aider_run(
     cmd_list: list[str], path: Path | None = None, **process_args
 ) -> subprocess.CompletedProcess:
-    path = path or AIDER_INSTALL_PATH
     """Runs the command using the isolated environment."""
+    path = path or AIDER_INSTALL_PATH
     if not aider_installed(path):
         aider_install(path)
-    full_cmd = ["uv", "run", "aider_trampoline.py", os.getcwd()] + cmd_list
-    full_cmd_str = subprocess.list2cmdline(full_cmd)
-    env = dict(os.environ)
-    env["VIRTUAL_ENV"] = str(path / ".venv")
-    cp = subprocess.run(full_cmd_str, cwd=path, env=env, shell=True, **process_args)
-    return cp
+
+    iso = get_iso_env(path)
+    return iso.run(cmd_list, **process_args)
+
+    # cwd = os.getcwd()
+    # with iso.temp_path_context(cwd):
+    #     return iso.run(cmd_list, **process_args)
 
 
 def aider_install(path: Path | None = None) -> None:
-    """Uses isolated_environment to install aider."""
+    """Uses iso-env to install aider."""
     path = path or AIDER_INSTALL_PATH
     if aider_installed(path):
         return
-    # Print installing message
+
     print("Installing aider...")
-    # Install aider using isolated_environment
     path.mkdir(exist_ok=True)
-    subprocess.run(["uv", "venv"], cwd=str(path), check=True)
-    requirements = path / "requirements.txt"
-    requirements.write_text("\n".join(REQUIREMENTS))
-    env: dict = dict(os.environ)
-    env["VIRTUAL_ENV"] = str(path / ".venv")
-    subprocess.run(
-        "uv pip install -r requirements.txt",
-        cwd=str(path),
-        env=env,
-        shell=True,
-        check=True,
-    )
 
-    # delete this file.
-    # aider-install\Lib\site-packages\distutils-precedence.pth
-    problematic_file = path / "Lib" / "site-packages" / "distutils-precedence.pth"
-    if problematic_file.exists():
-        try:
-            problematic_file.unlink()
-        except Exception as e:
-            warnings.warn(f"Failed to delete {problematic_file}: {e}")
-
-    # copy aider_control.py to the installation path
-    # add a file to indicate that the installation was successful
-    (path / "installed").touch()
+    # noqa: F841 - IsoEnv constructor creates the environment even if we don't use the returned object
+    iso = get_iso_env(path)
+    iso.run(["aider", "--version"], check=True)
+    print("Aider installed successfully.")
 
 
 def aider_install_path() -> str | None:
@@ -119,13 +102,10 @@ def aider_upgrade(path: Path | None = None) -> int:
     if not aider_installed():
         aider_install()
         return 0
-    upgrade_cmd = ["uv", "pip", "install", "--upgrade", AIDER_CHAT]
 
+    iso = get_iso_env(path)
     try:
-        cp = aider_run(upgrade_cmd, check=True, path=path)
-        if cp.returncode != 0:
-            print(f"Error upgrading aider: {cp.returncode}")
-            return cp.returncode
+        iso.run(["pip", "install", "--upgrade", AIDER_CHAT], check=True)
         print("Aider upgraded successfully.")
         return 0
     except subprocess.CalledProcessError as e:
