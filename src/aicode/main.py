@@ -145,6 +145,19 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         action="store_true",
         help="Use ChatGPT model",
     )
+
+    gui_group = argparser.add_mutually_exclusive_group()
+    gui_group.add_argument(
+        "--gui",
+        action="store_true",
+        help="Use GUI mode",
+    )
+    gui_group.add_argument(
+        "--cli",
+        action="store_true",
+        help="Use CLI mode (default)",
+    )
+
     args, unknown_args = argparser.parse_known_args()
 
     return args, unknown_args
@@ -161,6 +174,25 @@ def cleanup() -> None:
                 os.remove(file)
             except OSError:
                 warnings.warn(f"Failed to remove {file}")
+
+
+def get_interface_mode(args: argparse.Namespace) -> bool:
+    """Returns True for GUI mode, False for CLI mode"""
+    if args.gui:
+        return True
+    if args.cli:
+        return False
+
+    while True:
+        try:
+            choice = int(input("Select interface:\n[0] GUI\n[1] CLI\nChoice: "))
+            if choice == 0:
+                return True
+            if choice == 1:
+                return False
+            print("Please enter 0 or 1")
+        except ValueError:
+            print("Please enter a valid number (0 or 1)")
 
 
 def get_model(
@@ -393,6 +425,8 @@ def cli() -> int:
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     # os.environ["OPENAI_API_KEY"] = openai_key
 
+    use_gui = get_interface_mode(args)
+
     if os.path.exists(AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
         answer = (
             input("Chat history found. Would you like to restore it? [y/N]: ")
@@ -404,7 +438,10 @@ def cli() -> int:
         else:
             cmd_list = ["aider", "--no-check-update"]
     else:
-        cmd_list = ["aider", "--no-check-update"]
+        cmd_list = ["aider.chat" if use_gui else "aider", "--no-check-update"]
+
+    if use_gui:
+        cmd_list.append("--gui")
     if is_anthropic_model:
         cmd_list.append("--sonnet")
     if args.auto_commit:
