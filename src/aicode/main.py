@@ -185,11 +185,14 @@ def get_interface_mode(args: argparse.Namespace) -> bool:
 
     while True:
         try:
-            choice = int(input("Select interface:\n[0] GUI\n[1] CLI\nChoice: "))
-            if choice == 0:
-                return True
-            if choice == 1:
+            answer = input("Select interface:\n  [0] CLI\n  [1] GUI\nChoice: ")
+            if answer.strip() == "":
                 return False
+            choice = int(answer)
+            if choice == 0:
+                return False
+            if choice == 1:
+                return True
             print("Please enter 0 or 1")
         except ValueError:
             print("Please enter a valid number (0 or 1)")
