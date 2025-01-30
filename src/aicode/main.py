@@ -185,7 +185,7 @@ def get_interface_mode(args: argparse.Namespace) -> bool:
 
     while True:
         try:
-            answer = input("Select interface:\n  [0] CLI\n  [1] GUI\nChoice: ")
+            answer = input("Select interface:\n  [0] CLI\n  [1] GUI\nChoice [0]: ")
             if answer.strip() == "":
                 return False
             choice = int(answer)
