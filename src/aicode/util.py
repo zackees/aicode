@@ -22,3 +22,26 @@ def open_folder(path: Path) -> None:
         subprocess.Popen(["open", path])
     else:
         subprocess.Popen(["xdg-open", path])
+
+
+def _find_path_to_git_directory(cwd: Path) -> Path:
+    path = cwd.absolute()  # Make sure we have absolute path
+    while True:
+        if (path / ".git").exists():
+            return path
+        parent = path.parent
+        if parent == path:  # We've hit the root
+            break
+        path = parent
+    raise FileNotFoundError("No git directory found")
+
+
+def check_gitdirectory() -> bool:
+    try:
+        cwd = Path.cwd()
+        path = _find_path_to_git_directory(cwd=cwd)
+        print("Found git directory at", path)
+        os.chdir(str(path))
+        return True
+    except FileNotFoundError:
+        return False

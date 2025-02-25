@@ -6,7 +6,6 @@ import sys
 import time
 import warnings
 from os.path import exists
-from pathlib import Path
 from threading import Thread
 from typing import Optional, Union
 
@@ -24,7 +23,7 @@ from aicode.args import Args
 from aicode.models import CLAUD3_MODELS, get_model
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
-from aicode.util import open_folder
+from aicode.util import check_gitdirectory, open_folder
 
 # This will be at the root of the project, side to the .git directory
 AIDER_HISTORY = ".aider.chat.history.md"
@@ -137,29 +136,6 @@ def check_aiderignore() -> None:
         )
         with open(".aiderignore", encoding="utf-8", mode="w") as file:
             file.write(file_content)
-
-
-def find_path_to_git_directory(cwd: Path) -> Path:
-    path = cwd.absolute()  # Make sure we have absolute path
-    while True:
-        if (path / ".git").exists():
-            return path
-        parent = path.parent
-        if parent == path:  # We've hit the root
-            break
-        path = parent
-    raise FileNotFoundError("No git directory found")
-
-
-def check_gitdirectory() -> bool:
-    try:
-        cwd = Path.cwd()
-        path = find_path_to_git_directory(cwd=cwd)
-        print("Found git directory at", path)
-        os.chdir(str(path))
-        return True
-    except FileNotFoundError:
-        return False
 
 
 def cli() -> int:
