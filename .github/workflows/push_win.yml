@@ -18,8 +18,8 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v5
     - name: Install
-      run: ./install
+      run: uv sync --all-extras --dev
     - name: Run Test
       run: |
-        ./test
+        uv run pytest
       shell: bash
