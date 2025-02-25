@@ -80,7 +80,7 @@ def aider_install(path: Path | None = None) -> None:
         return
 
     print("Installing aider...")
-    path.mkdir(exist_ok=True)
+    path.mkdir(exist_ok=True, parents=True)
 
     # noqa: F841 - IsoEnv constructor creates the environment even if we don't use the returned object
     iso = get_iso_env(path)
