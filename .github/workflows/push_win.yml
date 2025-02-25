@@ -24,9 +24,8 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install .
-        python -m pip install pytest
+        python -m pip uv
+        uv pip install -e .
     - name: Run Test
       run: |
-        pytest tests
+        ./test
