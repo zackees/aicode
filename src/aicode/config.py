@@ -15,9 +15,21 @@ class Config:
             aider_update_info=data.get("aider_update_info", {}),
         )
 
+    @staticmethod
+    def load() -> "Config":
+        from aicode.openaicfg import load_from_storage
+
+        tmp: dict = load_from_storage()
+        return Config.from_dict(tmp)
+
     def to_dict(self) -> dict:
         return {
             "openai_key": self.openai_key,
             "anthropic_key": self.anthropic_key,
             "aider_update_info": self.aider_update_info,
         }
+
+    def save(self) -> None:
+        from aicode.openaicfg import save_config
+
+        save_config(self.to_dict())

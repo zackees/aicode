@@ -93,7 +93,7 @@ class AiderUpdateResult:
             return None
 
     @classmethod
-    def from_json(cls, json_data: dict[str, Union[str, bool]]) -> "AiderUpdateResult":
+    def from_json(cls, json_data: dict[str, str | bool | None]) -> "AiderUpdateResult":
         return AiderUpdateResult(
             has_update=bool(json_data["has_update"]),
             latest_version=str(json_data["latest_version"]),

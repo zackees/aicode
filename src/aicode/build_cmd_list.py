@@ -4,7 +4,7 @@ import os
 import sys
 import warnings
 from os.path import exists
-from typing import Optional, Union
+from typing import Optional
 
 from aicode.aider_control import (
     aider_fetch_update_status,
@@ -18,7 +18,6 @@ from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.config import Config
 from aicode.models import CLAUD3_MODELS, get_model
-from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import check_gitdirectory, open_folder
 
@@ -110,7 +109,8 @@ def _check_aiderignore() -> None:
 
 def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     unknown_args = args.unknown_args
-    config = create_or_load_config()
+    # config = Config.load()
+    config = Config.load()
     if args.open_aider_path:
         print("Opening the real path to aider.")
         path = AIDER_INSTALL_PATH
@@ -124,31 +124,37 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     if args.purge:
         print("Purging aider installation")
         aider_purge()
-        config["aider_update_info"] = {}
-        save_config(config)
+        config.aider_update_info = {}  # Purge stale update info
+        config.save()
         sys.exit(0)
 
     if args.upgrade:
         aider_upgrade()
-        config["aider_update_info"] = {}  # Purge stale update info
-        save_config(config)
+        # config["aider_update_info"] = {}  # Purge stale update info
+        config.aider_update_info = {}  # Purge stale update info
+        config.save()
         sys.exit(0)
     if args.set_key:
         print("Setting openai key")
-        config["openai_key"] = args.set_key
-        save_config(config)
-        config = create_or_load_config()
+        # config["openai_key"] = args.set_key
+        config.openai_key = args.set_key
+        config.save()
+        config = Config.load()
     if args.set_anthropic_key:
         print("Setting anthropic key")
-        config["anthropic_key"] = args.set_anthropic_key
-        save_config(config)
-        config = create_or_load_config()
+        # config["anthropic_key"] = args.set_anthropic_key
+        config.anthropic_key = args.set_anthropic_key
+        config.save()
+        # config = Config.load()
+        config = Config.load()
     has_git = check_gitdirectory()
 
     _check_gitignore()
     _check_aiderignore()
-    anthropic_key = config.get("anthropic_key")
-    openai_key = config.get("openai_key")
+    # anthropic_key = config.get("anthropic_key")
+    anthropic_key = config.anthropic_key
+    # openai_key = config.get("openai_key")
+    openai_key = config.openai_key
     model = get_model(args, anthropic_key, openai_key)
     aider_install_if_missing()
     is_anthropic_model = model in CLAUD3_MODELS
@@ -158,15 +164,13 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
             sys.exit(1)
         os.environ["ANTHROPIC_API_KEY"] = anthropic_key
     else:
-        openai_key = config.get("openai_key")
+        openai_key = config.openai_key
         if openai_key is None:
             print("OpenAI key not found, please set one with --set-key")
             sys.exit(1)
         os.environ["OPENAI_API_KEY"] = openai_key
 
-    last_aider_update_info: dict[str, Union[str, bool]] = config.get(
-        "aider_update_info", {}
-    )
+    last_aider_update_info: dict[str, str | bool | None] = config.aider_update_info
     update_info: Optional[AiderUpdateResult] = None
     if last_aider_update_info:
         try:
@@ -233,6 +237,5 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
     # Perform update in the background.
-    conf = Config.from_dict(config)
-    _ = background_update_task(config=conf)
-    return cmd_list, conf
+    _ = background_update_task(config=config)
+    return cmd_list, config
