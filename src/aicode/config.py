@@ -1,35 +1,28 @@
-from dataclasses import dataclass, field
-
+from dataclasses import dataclass, field, asdict, fields
+from typing import Optional, Dict, Union
 
 @dataclass
 class Config:
-    openai_key: str | None = None
-    anthropic_key: str | None = None
-    aider_update_info: dict[str, str | bool | None] = field(default_factory=dict)
+    openai_key: Optional[str] = None
+    anthropic_key: Optional[str] = None
+    aider_update_info: Dict[str, Union[str, bool, None]] = field(default_factory=dict)
 
     @staticmethod
     def from_dict(data: dict) -> "Config":
-        return Config(
-            openai_key=data.get("openai_key"),
-            anthropic_key=data.get("anthropic_key"),
-            aider_update_info=data.get("aider_update_info", {}),
-        )
+        # Only extract keys that match the dataclass fields
+        valid_keys = {f.name for f in fields(Config)}
+        filtered_data = {k: v for k, v in data.items() if k in valid_keys}
+        return Config(**filtered_data)
 
     @staticmethod
     def load() -> "Config":
         from aicode.openaicfg import load_from_storage
-
-        tmp: dict = load_from_storage()
-        return Config.from_dict(tmp)
+        data: dict = load_from_storage()
+        return Config.from_dict(data)
 
     def to_dict(self) -> dict:
-        return {
-            "openai_key": self.openai_key,
-            "anthropic_key": self.anthropic_key,
-            "aider_update_info": self.aider_update_info,
-        }
+        return asdict(self)
 
     def save(self) -> None:
         from aicode.openaicfg import save_config
-
         save_config(self.to_dict())
