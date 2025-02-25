@@ -1,5 +1,6 @@
-from dataclasses import dataclass, field, asdict, fields
-from typing import Optional, Dict, Union
+from dataclasses import asdict, dataclass, field, fields
+from typing import Dict, Optional, Union
+
 
 @dataclass
 class Config:
@@ -17,6 +18,7 @@ class Config:
     @staticmethod
     def load() -> "Config":
         from aicode.openaicfg import load_from_storage
+
         data: dict = load_from_storage()
         return Config.from_dict(data)
 
@@ -25,4 +27,5 @@ class Config:
 
     def save(self) -> None:
         from aicode.openaicfg import save_config
+
         save_config(self.to_dict())
