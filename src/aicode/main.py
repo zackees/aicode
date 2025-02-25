@@ -201,10 +201,6 @@ def cli() -> int:
     # it may soon no longer be necessary to specify the model.
     os.environ["AIDER_MODEL"] = model
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
-    # os.environ["OPENAI_API_KEY"] = openai_key
-
-    # C:\\Users\\niteris\\dev\\aicode\\.venv\\Scripts\\uv.EXE run --project C:\\Users\\niteris\\AppData\\Local\\aider-install\\aider\\.venv aider.chat --no-check-update --gui --sonnet --no-auto-commit --architect --no-auto-lint --watch
-
     use_gui = get_interface_mode(args)
 
     if os.path.exists(AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
