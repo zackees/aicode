@@ -1,13 +1,11 @@
 """aicode - front end for aider"""
 
-import argparse
 import atexit
 import os
 import subprocess
 import sys
 import time
 import warnings
-from dataclasses import dataclass, field
 from os.path import exists
 from pathlib import Path
 from threading import Thread
@@ -23,37 +21,14 @@ from aicode.aider_control import (
     aider_upgrade,
 )
 from aicode.aider_update_result import AiderUpdateResult, Version
+from aicode.args import Args
+from aicode.models import CLAUD3_MODELS, get_model
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
-
-CHAT_GPT = "openai/gpt-4o"
 
 # This will be at the root of the project, side to the .git directory
 AIDER_HISTORY = ".aider.chat.history.md"
 
-
-@dataclass
-class Model:
-    name: str
-    description: str
-    model_str: str
-
-
-MODELS = {
-    "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
-    "claude": Model(
-        "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-20250219"
-    ),
-    "deepseek": Model(
-        "deepseek",
-        "The deepseek model.",
-        "deepseek",
-    ),
-}
-
-CLAUD3_MODELS = {"claude"}
-
-MODEL_CHOICES = list(MODELS.keys())
 _ENABLE_HISTORY_ASK = False
 
 
@@ -63,143 +38,6 @@ def aider_install_if_missing() -> None:
     if aider_installed():
         return
     aider_install()
-
-
-class CustomHelpParser(argparse.ArgumentParser):
-    def print_help(self):
-        # Call the default help message
-        super().print_help()
-        is_installed = aider_installed()
-        if not is_installed:
-            print("aider is not installed, no more help available.")
-            sys.exit(0)
-        print("\n\n############ aider --help ############")
-        completed_proc = subprocess.run(
-            ["aider", "--help"], check=False, capture_output=True, text=True
-        )
-        stdout = completed_proc.stdout
-        print(stdout)
-        # flush print buffer
-        sys.stdout.flush()
-        sys.exit(0)
-        # make sure and return exit 0 on help message.
-
-
-@dataclass
-class Args:
-    prompt: list[str] = field(default_factory=list)
-    set_key: Optional[str] = None
-    set_anthropic_key: Optional[str] = None
-    open_aider_path: bool = False
-    purge: bool = False
-    upgrade: bool = False
-    keep: bool = False
-    auto_commit: bool = False
-    no_watch: bool = False
-    lint: bool = False
-    no_architect: bool = False
-    claude: bool = False
-    model: Optional[str] = None
-    chatgpt: bool = False
-    gui: bool = False
-    cli: bool = False
-    unknown_args: list[str] = field(default_factory=list)
-
-
-def parse_args() -> Args:
-    CustomHelpParser = argparse.ArgumentParser
-    argparser = CustomHelpParser(
-        usage=(
-            "Ask OpenAI for help with code, uses aider-chat on the backend. "
-            "Any args not listed here are assumed to be for aider and will be passed on to it.\n"
-            f"The real aider install path will be located at {AIDER_INSTALL_PATH}"
-        )
-    )
-    argparser.add_argument("prompt", nargs="*", help="Args to pass onto aider")
-    argparser.add_argument("--set-key", help="Set OpenAI key")
-    argparser.add_argument("--set-anthropic-key", help="Set Claude key")
-    argparser.add_argument(
-        "--open-aider-path",
-        action="store_true",
-        help="Opens the real path to aider if it's installed.",
-    )
-    argparser.add_argument(
-        "--purge", action="store_true", help="Purge aider installation"
-    )
-    argparser.add_argument(
-        "--upgrade", action="store_true", help="Upgrade aider using pipx"
-    )
-    argparser.add_argument(
-        "--keep", action="store_true", help="Keep chat/input history"
-    )
-    argparser.add_argument(
-        "--auto-commit",
-        "-a",
-        action="store_true",
-        help="Automatically commit changes",
-    )
-    argparser.add_argument(
-        "--no-watch",
-        action="store_true",
-        help="Disable aider watch mode, which is enabled by default",
-    )
-    argparser.add_argument(
-        "--lint",
-        action="store_true",
-        help="Enable auto-linting",
-    )
-    argparser.add_argument(
-        "--no-architect",
-        action="store_true",
-        help="Disable architect mode",
-    )
-    model_group = argparser.add_mutually_exclusive_group()
-    model_group.add_argument(
-        "--claude",
-        action="store_true",
-        help="Use Claude model",
-    )
-    model_group.add_argument("--model", choices=MODEL_CHOICES, help="Model to use")
-    model_group.add_argument(
-        "--chatgpt",
-        action="store_true",
-        help="Use ChatGPT model",
-    )
-    gui_group = argparser.add_mutually_exclusive_group()
-    gui_group.add_argument(
-        "--gui",
-        action="store_true",
-        help="Use GUI mode",
-    )
-    gui_group.add_argument(
-        "--cli",
-        action="store_true",
-        help="Use CLI mode (default)",
-    )
-
-    # Parse known arguments, leaving unknown args for aider
-    parsed, unknown_args = argparser.parse_known_args()
-
-    # Construct and return the Args dataclass instance
-    return Args(
-        prompt=parsed.prompt,
-        set_key=parsed.set_key,
-        set_anthropic_key=parsed.set_anthropic_key,
-        open_aider_path=parsed.open_aider_path,
-        purge=parsed.purge,
-        upgrade=parsed.upgrade,
-        keep=parsed.keep,
-        auto_commit=parsed.auto_commit,
-        no_watch=parsed.no_watch,
-        lint=parsed.lint,
-        no_architect=parsed.no_architect,
-        claude=parsed.claude,
-        model=parsed.model,
-        chatgpt=parsed.chatgpt,
-        gui=parsed.gui,
-        cli=parsed.cli,
-        unknown_args=unknown_args,
-    )
 
 
 def cleanup() -> None:
@@ -235,23 +73,6 @@ def get_interface_mode(args: Args) -> bool:
             print("Please enter 0 or 1")
         except ValueError:
             print("Please enter a valid number (0 or 1)")
-
-
-def get_model(
-    args: Args, anthropic_key: Optional[str], openai_key: Optional[str]
-) -> str:
-    if args.claude:
-        assert "claude" in MODELS
-        return "claude"
-    elif args.chatgpt:
-        return CHAT_GPT
-    elif args.model is not None:
-        return args.model
-    elif anthropic_key is not None:
-        return "claude"
-    elif openai_key is not None:
-        return CHAT_GPT
-    return "claude"
 
 
 def check_gitignore() -> None:
@@ -294,32 +115,6 @@ def background_update_task(config: dict) -> None:
         pass
     except SystemExit:
         pass
-
-
-def fix_escape_chars(path: str) -> str:
-    if os.name != "nt":
-        return path  # not necessary on posix systems
-    if os.path.exists(path):
-        return Path(path).as_posix()
-    return path
-
-
-def fix_paths(unknown_args: list) -> list:
-    if os.name != "nt":
-        # No path conversion needed on posix systems
-        return unknown_args
-    is_git_bash_or_cygwin = "MSYSTEM" in os.environ
-    if not is_git_bash_or_cygwin:
-        # No path conversion needed on windows cmd
-        return unknown_args
-    out: list = []
-    for arg in unknown_args:
-        try:
-            arg_fixed = fix_escape_chars(arg)
-            out.append(arg_fixed)
-        except Exception:
-            out.append(arg)
-    return out
 
 
 def get_lint_command() -> Optional[str]:
@@ -377,9 +172,7 @@ def _open_folder(path: Path) -> None:
 
 
 def cli() -> int:
-    # does .git directory exist?
-    # args, unknown_args = parse_args()
-    args: Args = parse_args()
+    args: Args = Args.parse()
     unknown_args = args.unknown_args
     config = create_or_load_config()
     if args.open_aider_path:
@@ -504,7 +297,7 @@ def cli() -> int:
             min_version = Version("0.70.0")
             if current_version >= min_version:
                 cmd_list.append("--watch")
-    args.prompt = fix_paths(args.prompt)
+
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
     # Perform update in the background.
