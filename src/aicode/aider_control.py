@@ -17,7 +17,7 @@ def get_iso_env(path: Path) -> IsoEnv:
     """Creates and returns an IsoEnv instance"""
     args = IsoEnvArgs(
         venv_path=path / ".venv",
-        build_info=Requirements(AIDER_CHAT, python_version=">=3.12"),
+        build_info=Requirements(AIDER_CHAT, python_version="==3.11.*"),
     )
     return IsoEnv(args)
 
@@ -27,7 +27,7 @@ def aider_fetch_update_status() -> AiderUpdateResult:
     cp = aider_run(
         ["aider", "--just-check-update"],
         capture_output=True,
-        check=False,
+        check=True,
         universal_newlines=True,
     )
     lines = cp.stdout.strip().split("\n")
