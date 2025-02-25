@@ -29,12 +29,17 @@ def _print_cmd_list(cmd_list: list[str]) -> None:
     print("=" * 80 + "\n")
 
 
-def cli(args: Args | list[str] | None = None) -> int:
+def _register_cleanup_if_necessary(args: Args) -> None:
     from aicode.util import cleanup_chat_history
 
-    cwd_abs = Path.cwd().absolute()
+    if not args.keep:
+        cwd_abs = Path.cwd().absolute()
+        atexit.register(lambda: cleanup_chat_history(cwd_abs))
 
+
+def cli(args: Args | list[str] | None = None) -> int:
     args = _to_args(args)
+    _register_cleanup_if_necessary(args)
     cmd_list: list[str]
     config: Config
     cmd_list, config = build_cmd_list_or_die(args)
@@ -42,11 +47,8 @@ def cli(args: Args | list[str] | None = None) -> int:
     # Perform update in the background.
     _ = background_update_task(config=config)
     _print_cmd_list(cmd_list)
-
     # rtn = subprocess.call(cmd_list)
     rtn = run_process(cmd_list)
-    if not args.keep:
-        atexit.register(lambda: cleanup_chat_history(cwd_abs))
     if rtn != 0:
         # debug by showing where the aider executable is
         aider_path = aider_install_path()
