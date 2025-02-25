@@ -18,7 +18,7 @@ dependencies = [
     "uv-iso-env>=1.0.33",
 ]
 # Change this with the version number bump.
-version = "2.0.13"
+version = "2.0.14"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -46,9 +46,6 @@ profile = "black"
 [tool.mypy]
 ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
-
-[tool.uv.workspace]
-members = ["src/aicode/aider-install/aider"]
 
 [project.scripts]
 aicode = "aicode.main:main"
