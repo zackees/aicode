@@ -74,11 +74,11 @@ class Args:
     unknown_args: list[str] = field(default_factory=list)
 
     @staticmethod
-    def parse() -> "Args":
-        return _parse_args()
+    def parse(args: list[str] | None = None) -> "Args":
+        return _parse_args(args)
 
 
-def _parse_args() -> Args:
+def _parse_args(args: list[str] | None) -> Args:
     from aicode.models import MODEL_CHOICES
     from aicode.paths import AIDER_INSTALL_PATH
 
@@ -153,7 +153,7 @@ def _parse_args() -> Args:
     )
 
     # Parse known arguments, leaving unknown args for aider
-    parsed, unknown_args = argparser.parse_known_args()
+    parsed, unknown_args = argparser.parse_known_args(args)
 
     prompt = fix_paths(parsed.prompt)
 
