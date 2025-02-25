@@ -9,11 +9,11 @@ from aicode.aider_control import (
     aider_install,
     aider_install_path,
     aider_installed,
-    aider_run,
 )
 from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.build_cmd_list import build_cmd_list_or_die
+from aicode.run_process import run_process
 
 # This will be at the root of the project, side to the .git directory
 AIDER_HISTORY = ".aider.chat.history.md"
@@ -54,7 +54,7 @@ def cli() -> int:
     print("=" * 80 + "\n")
 
     # rtn = subprocess.call(cmd_list)
-    rtn = aider_run(cmd_list).returncode
+    rtn = run_process(cmd_list)
     if args.keep:
         return rtn
     atexit.register(cleanup)
