@@ -3,10 +3,8 @@
 import atexit
 import os
 import sys
-import time
 import warnings
 from os.path import exists
-from threading import Thread
 from typing import Optional, Union
 
 from aicode.aider_control import (
@@ -20,6 +18,7 @@ from aicode.aider_control import (
 )
 from aicode.aider_update_result import AiderUpdateResult, Version
 from aicode.args import Args
+from aicode.background import background_update_task
 from aicode.models import CLAUD3_MODELS, get_model
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
@@ -100,20 +99,6 @@ def check_gitignore() -> None:
                             file.write("\n" + needle)
     else:
         print(".gitignore file does not exist.")
-
-
-def background_update_task(config: dict) -> None:
-    try:
-        # Wait for aider to start so that we don't impact startup time.
-        # This is really needed for windows because startup is so slow.
-        time.sleep(5)
-        update_info = aider_fetch_update_status()
-        config["aider_update_info"] = update_info.to_json_data()
-        save_config(config)
-    except KeyboardInterrupt:
-        pass
-    except SystemExit:
-        pass
 
 
 def get_lint_command() -> Optional[str]:
@@ -268,9 +253,7 @@ def cli() -> int:
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
     # Perform update in the background.
-    update_thread = Thread(target=background_update_task, args=(config,))
-    update_thread.daemon = True
-    update_thread.start()
+    _ = background_update_task(config=config)
 
     print("\n" + "=" * 80)
     print("RUNNING COMMAND:")
