@@ -2,7 +2,6 @@
 
 import atexit
 import os
-import subprocess
 import sys
 import time
 import warnings
@@ -25,6 +24,7 @@ from aicode.args import Args
 from aicode.models import CLAUD3_MODELS, get_model
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
+from aicode.util import open_folder
 
 # This will be at the root of the project, side to the .git directory
 AIDER_HISTORY = ".aider.chat.history.md"
@@ -162,15 +162,6 @@ def check_gitdirectory() -> bool:
         return False
 
 
-def _open_folder(path: Path) -> None:
-    if sys.platform == "win32":
-        os.startfile(path)
-    elif sys.platform == "darwin":
-        subprocess.Popen(["open", path])
-    else:
-        subprocess.Popen(["xdg-open", path])
-
-
 def cli() -> int:
     args: Args = Args.parse()
     unknown_args = args.unknown_args
@@ -180,7 +171,7 @@ def cli() -> int:
         path = AIDER_INSTALL_PATH
         if path is not None:
             print(path)
-            _open_folder(path)
+            open_folder(path)
             return 0
         else:
             warnings.warn("aider executable not found")
