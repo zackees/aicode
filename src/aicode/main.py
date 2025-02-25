@@ -11,6 +11,7 @@ from aicode.aider_control import (
 from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.build_cmd_list import build_cmd_list_or_die
+from aicode.config import Config
 from aicode.run_process import run_process
 
 
@@ -31,9 +32,11 @@ def _print_cmd_list(cmd_list: list[str]) -> None:
 def cli(args: Args | list[str] | None = None) -> int:
     from aicode.util import cleanup_chat_history
 
+    cwd_abs = Path.cwd().absolute()
+
     args = _to_args(args)
     cmd_list: list[str]
-    config: dict
+    config: Config
     cmd_list, config = build_cmd_list_or_die(args)
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
     # Perform update in the background.
@@ -42,10 +45,8 @@ def cli(args: Args | list[str] | None = None) -> int:
 
     # rtn = subprocess.call(cmd_list)
     rtn = run_process(cmd_list)
-    if args.keep:
-        return rtn
-    else:
-        atexit.register(lambda: cleanup_chat_history(Path.cwd()))
+    if not args.keep:
+        atexit.register(lambda: cleanup_chat_history(cwd_abs))
     if rtn != 0:
         # debug by showing where the aider executable is
         aider_path = aider_install_path()

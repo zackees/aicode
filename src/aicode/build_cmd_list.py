@@ -16,6 +16,7 @@ from aicode.aider_control import (
 from aicode.aider_update_result import AiderUpdateResult, Version
 from aicode.args import Args
 from aicode.background import background_update_task
+from aicode.config import Config
 from aicode.models import CLAUD3_MODELS, get_model
 from aicode.openaicfg import create_or_load_config, save_config
 from aicode.paths import AIDER_INSTALL_PATH
@@ -85,7 +86,7 @@ def _check_gitignore() -> None:
         print(".gitignore file does not exist.")
 
 
-def _get_lint_command() -> Optional[str]:
+def _get_lint_command() -> str | None:
     if exists("./lint"):
         return "./lint"
     return None
@@ -107,7 +108,7 @@ def _check_aiderignore() -> None:
             file.write(file_content)
 
 
-def build_cmd_list_or_die(args: Args) -> tuple[list[str], dict]:
+def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     unknown_args = args.unknown_args
     config = create_or_load_config()
     if args.open_aider_path:
@@ -232,5 +233,6 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], dict]:
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
     # Perform update in the background.
-    _ = background_update_task(config=config)
-    return cmd_list, config
+    conf = Config.from_dict(config)
+    _ = background_update_task(config=conf)
+    return cmd_list, conf
