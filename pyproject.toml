@@ -20,6 +20,22 @@ dependencies = [
 # Change this with the version number bump.
 version = "2.0.15"
 
+[project.scripts]
+aicode = "aicode.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "flake8",
+    "mypy",
+    "pylint",
+    "pytest",
+    "tox",
+    "ruff",
+    "pytest-xdist",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
@@ -46,6 +62,3 @@ profile = "black"
 [tool.mypy]
 ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
-
-[project.scripts]
-aicode = "aicode.main:main"
