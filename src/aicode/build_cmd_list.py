@@ -1,6 +1,7 @@
 """aicode - front end for aider"""
 
 import os
+import sys
 import warnings
 from os.path import exists
 from typing import Optional, Union
@@ -107,8 +108,6 @@ def _check_aiderignore() -> None:
 
 
 def build_cmd_list_or_die(args: Args) -> tuple[list[str], dict]:
-    import sys
-
     unknown_args = args.unknown_args
     config = create_or_load_config()
     if args.open_aider_path:
