@@ -42,7 +42,7 @@ class Model:
 MODELS = {
     "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
     "claude": Model(
-        "claude", "The Claude model.", "anthropic/claude-3-5-sonnet-20241022"
+        "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-20250219"
     ),
     "deepseek": Model(
         "deepseek",
