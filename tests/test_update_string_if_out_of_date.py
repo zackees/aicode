@@ -5,7 +5,7 @@ Unit test file.
 import unittest
 
 from aicode.aider_control import AiderUpdateResult, aider_fetch_update_status
-from aicode.main import aider_install_if_missing
+from aicode.build_cmd_list import aider_install_if_missing
 
 
 class FetchUpdateStringIfOutOfDateTester(unittest.TestCase):

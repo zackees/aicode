@@ -30,7 +30,9 @@ def aider_fetch_update_status() -> AiderUpdateResult:
         check=True,
         universal_newlines=True,
     )
-    lines = cp.stdout.strip().split("\n")
+    assert cp.stdout is not None
+    stdout: str = str(cp.stdout)
+    lines = stdout.strip().split("\n")
     update_available = None
     current_version = None
     latest_version = None

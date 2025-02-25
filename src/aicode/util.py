@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import sys
+import warnings
 from pathlib import Path
 
 
@@ -45,3 +46,17 @@ def check_gitdirectory() -> bool:
         return True
     except FileNotFoundError:
         return False
+
+
+def cleanup_chat_history(cwd: Path) -> None:
+    files = [
+        ".aider.chat.history.md",
+        ".aider.input.history",
+    ]
+    for file in files:
+        file_path = cwd / file
+        if file_path.exists():
+            try:
+                file_path.unlink()
+            except OSError:
+                warnings.warn(f"Failed to remove {file_path}")

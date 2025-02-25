@@ -21,7 +21,7 @@ from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import check_gitdirectory, open_folder
 
 # This will be at the root of the project, side to the .git directory
-AIDER_HISTORY = ".aider.chat.history.md"
+_AIDER_HISTORY = ".aider.chat.history.md"
 
 _ENABLE_HISTORY_ASK = False
 
@@ -32,19 +32,6 @@ def aider_install_if_missing() -> None:
     if aider_installed():
         return
     aider_install()
-
-
-def cleanup() -> None:
-    files = [
-        ".aider.chat.history.md",
-        ".aider.input.history",
-    ]
-    for file in files:
-        if os.path.exists(file):
-            try:
-                os.remove(file)
-            except OSError:
-                warnings.warn(f"Failed to remove {file}")
 
 
 def _get_interface_mode(args: Args) -> bool:
@@ -200,7 +187,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], dict]:
     print(f"Starting aider with model {os.environ['AIDER_MODEL']}")
     use_gui = _get_interface_mode(args)
 
-    if os.path.exists(AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
+    if os.path.exists(_AIDER_HISTORY) and _ENABLE_HISTORY_ASK:
         answer = (
             input("Chat history found. Would you like to restore it? [y/N]: ")
             .strip()

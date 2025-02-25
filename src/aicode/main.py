@@ -1,46 +1,22 @@
 """aicode - front end for aider"""
 
 import atexit
-import os
+import subprocess
 import sys
-import warnings
+from pathlib import Path
 
 from aicode.aider_control import (
-    aider_install,
     aider_install_path,
-    aider_installed,
 )
 from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.build_cmd_list import build_cmd_list_or_die
 from aicode.run_process import run_process
 
-# This will be at the root of the project, side to the .git directory
-AIDER_HISTORY = ".aider.chat.history.md"
-
-
-def aider_install_if_missing() -> None:
-    # Set the custom bin path where you want aider to be installed
-    # Check if aider is already installed
-    if aider_installed():
-        return
-    aider_install()
-
-
-def cleanup() -> None:
-    files = [
-        ".aider.chat.history.md",
-        ".aider.input.history",
-    ]
-    for file in files:
-        if os.path.exists(file):
-            try:
-                os.remove(file)
-            except OSError:
-                warnings.warn(f"Failed to remove {file}")
-
 
 def cli() -> int:
+    from aicode.util import cleanup_chat_history
+
     args: Args = Args.parse()
     cmd_list: list[str]
     config: dict
@@ -50,14 +26,16 @@ def cli() -> int:
     _ = background_update_task(config=config)
     print("\n" + "=" * 80)
     print("RUNNING COMMAND:")
-    print(" ".join(cmd_list))
+    cmd_str = subprocess.list2cmdline(cmd_list)
+    print(cmd_str)
     print("=" * 80 + "\n")
 
     # rtn = subprocess.call(cmd_list)
     rtn = run_process(cmd_list)
     if args.keep:
         return rtn
-    atexit.register(cleanup)
+    else:
+        atexit.register(lambda: cleanup_chat_history(Path.cwd()))
     if rtn != 0:
         # debug by showing where the aider executable is
         aider_path = aider_install_path()
