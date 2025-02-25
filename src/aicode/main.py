@@ -7,11 +7,11 @@ import subprocess
 import sys
 import time
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from os.path import exists
 from pathlib import Path
 from threading import Thread
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 from aicode.aider_control import (
     aider_fetch_update_status,
@@ -85,18 +85,37 @@ class CustomHelpParser(argparse.ArgumentParser):
         # make sure and return exit 0 on help message.
 
 
-def parse_args() -> Tuple[argparse.Namespace, list]:
-    AIDER_INSTALL_PATH
+@dataclass
+class Args:
+    prompt: list[str] = field(default_factory=list)
+    set_key: Optional[str] = None
+    set_anthropic_key: Optional[str] = None
+    open_aider_path: bool = False
+    purge: bool = False
+    upgrade: bool = False
+    keep: bool = False
+    auto_commit: bool = False
+    no_watch: bool = False
+    lint: bool = False
+    no_architect: bool = False
+    claude: bool = False
+    model: Optional[str] = None
+    chatgpt: bool = False
+    gui: bool = False
+    cli: bool = False
+    unknown_args: list[str] = field(default_factory=list)
+
+
+def parse_args() -> Args:
+    CustomHelpParser = argparse.ArgumentParser
     argparser = CustomHelpParser(
         usage=(
-            "Ask OpenAI for help with code, uses aider-chat on the backend."
-            " Any args not listed here are assumed to be for aider and will be passed on to it.\n"
+            "Ask OpenAI for help with code, uses aider-chat on the backend. "
+            "Any args not listed here are assumed to be for aider and will be passed on to it.\n"
             f"The real aider install path will be located at {AIDER_INSTALL_PATH}"
         )
     )
-    argparser.add_argument(
-        "prompt", nargs="*", help="Args to pass onto aider"
-    )  # Changed nargs to '*'
+    argparser.add_argument("prompt", nargs="*", help="Args to pass onto aider")
     argparser.add_argument("--set-key", help="Set OpenAI key")
     argparser.add_argument("--set-anthropic-key", help="Set Claude key")
     argparser.add_argument(
@@ -117,6 +136,7 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         "--auto-commit",
         "-a",
         action="store_true",
+        help="Automatically commit changes",
     )
     argparser.add_argument(
         "--no-watch",
@@ -134,10 +154,10 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         help="Disable architect mode",
     )
     model_group = argparser.add_mutually_exclusive_group()
-
     model_group.add_argument(
         "--claude",
         action="store_true",
+        help="Use Claude model",
     )
     model_group.add_argument("--model", choices=MODEL_CHOICES, help="Model to use")
     model_group.add_argument(
@@ -145,7 +165,6 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         action="store_true",
         help="Use ChatGPT model",
     )
-
     gui_group = argparser.add_mutually_exclusive_group()
     gui_group.add_argument(
         "--gui",
@@ -158,9 +177,29 @@ def parse_args() -> Tuple[argparse.Namespace, list]:
         help="Use CLI mode (default)",
     )
 
-    args, unknown_args = argparser.parse_known_args()
+    # Parse known arguments, leaving unknown args for aider
+    parsed, unknown_args = argparser.parse_known_args()
 
-    return args, unknown_args
+    # Construct and return the Args dataclass instance
+    return Args(
+        prompt=parsed.prompt,
+        set_key=parsed.set_key,
+        set_anthropic_key=parsed.set_anthropic_key,
+        open_aider_path=parsed.open_aider_path,
+        purge=parsed.purge,
+        upgrade=parsed.upgrade,
+        keep=parsed.keep,
+        auto_commit=parsed.auto_commit,
+        no_watch=parsed.no_watch,
+        lint=parsed.lint,
+        no_architect=parsed.no_architect,
+        claude=parsed.claude,
+        model=parsed.model,
+        chatgpt=parsed.chatgpt,
+        gui=parsed.gui,
+        cli=parsed.cli,
+        unknown_args=unknown_args,
+    )
 
 
 def cleanup() -> None:
@@ -176,7 +215,7 @@ def cleanup() -> None:
                 warnings.warn(f"Failed to remove {file}")
 
 
-def get_interface_mode(args: argparse.Namespace) -> bool:
+def get_interface_mode(args: Args) -> bool:
     """Returns True for GUI mode, False for CLI mode"""
     if args.gui:
         return True
@@ -199,7 +238,7 @@ def get_interface_mode(args: argparse.Namespace) -> bool:
 
 
 def get_model(
-    args: argparse.Namespace, anthropic_key: Optional[str], openai_key: Optional[str]
+    args: Args, anthropic_key: Optional[str], openai_key: Optional[str]
 ) -> str:
     if args.claude:
         assert "claude" in MODELS
@@ -339,7 +378,9 @@ def _open_folder(path: Path) -> None:
 
 def cli() -> int:
     # does .git directory exist?
-    args, unknown_args = parse_args()
+    # args, unknown_args = parse_args()
+    args: Args = parse_args()
+    unknown_args = args.unknown_args
     config = create_or_load_config()
     if args.open_aider_path:
         print("Opening the real path to aider.")
