@@ -24,7 +24,7 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        python -m pip uv
+        python -m pip install uv
         uv pip install -e .
     - name: Run Test
       run: |
