@@ -1,4 +1,6 @@
+import subprocess
 import time
+import warnings
 from threading import Thread
 
 from aicode.config import Config
@@ -19,6 +21,14 @@ def _background_update_task(config: Config) -> None:
         pass
     except SystemExit:
         pass
+    except subprocess.CalledProcessError as cpe:
+        warnings.warn(
+            f"Error checking for updates: {cpe}, rtn={cpe.returncode}, stdout={cpe.stdout}, stderr={cpe.stderr}"
+        )
+        pass
+    except Exception as e:
+        warnings.warn(f"Error checking for updates: {e}")
+        pass
 
 
 def background_update_task(config: Config) -> Thread:
@@ -26,3 +36,14 @@ def background_update_task(config: Config) -> Thread:
     update_thread.daemon = True
     update_thread.start()
     return update_thread
+
+
+def _test() -> None:
+    config = Config()
+    thread = background_update_task(config)
+    thread.join()
+    time.sleep(10)
+
+
+if __name__ == "__main__":
+    _test()

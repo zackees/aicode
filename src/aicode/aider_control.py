@@ -28,10 +28,13 @@ def aider_fetch_update_status() -> AiderUpdateResult:
         ["aider", "--just-check-update"],
         capture_output=True,
         check=True,
-        universal_newlines=True,
+        text=False,
+        universal_newlines=False,
+        shell=False,
     )
     assert cp.stdout is not None
-    stdout: str = str(cp.stdout)
+    stdout_bytes: bytes = cp.stdout
+    stdout: str = stdout_bytes.decode("utf-8")
     lines = stdout.strip().split("\n")
     update_available = None
     current_version = None
