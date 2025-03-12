@@ -104,13 +104,10 @@ def aider_install_path() -> str | None:
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
     path = path or AIDER_INSTALL_PATH
-    if not aider_installed():
-        aider_install()
-        return 0
-
+    aider_purge(path)
     iso = get_iso_env(path)
     try:
-        iso.run(["pip", "install", "--upgrade", AIDER_CHAT], check=True)
+        iso.run(["pip", "install", AIDER_CHAT], check=True)
         print("Aider upgraded successfully.")
         return 0
     except subprocess.CalledProcessError as e:
