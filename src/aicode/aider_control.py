@@ -30,6 +30,16 @@ REQUIREMENTS = [AIDER_CHAT]
 # """
 
 
+def _save_install_breadcrumb(path: Path) -> None:
+    """Saves a breadcrumb file to indicate that the installation was successful."""
+    (path / "installed").touch()
+
+
+def _has_install_breadcrumb(path: Path) -> bool:
+    """Checks if the installation breadcrumb file exists."""
+    return (path / "installed").exists()
+
+
 def get_iso_env(path: Path) -> IsoEnv:
     """Creates and returns an IsoEnv instance"""
     args = IsoEnvArgs(
@@ -76,7 +86,7 @@ def aider_fetch_update_status() -> AiderUpdateResult:
 
 def aider_installed(path: Path | None = None) -> bool:
     path = path or AIDER_INSTALL_PATH
-    return (path / "installed").exists()
+    return _has_install_breadcrumb(path)
 
 
 def aider_run(
@@ -107,6 +117,7 @@ def aider_install(path: Path | None = None) -> None:
     # noqa: F841 - IsoEnv constructor creates the environment even if we don't use the returned object
     iso = get_iso_env(path)
     iso.run(["aider", "--version"], check=True)
+    _save_install_breadcrumb(path)
     print("Aider installed successfully.")
 
 
