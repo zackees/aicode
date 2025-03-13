@@ -59,6 +59,9 @@ def cli(args: Args | list[str] | None = None) -> int:
     return rtn
 
 
+# TODO: add --auto-accept-architect when it's released.
+
+
 def main() -> int:
     try:
         return cli()
