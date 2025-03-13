@@ -17,7 +17,7 @@ from aicode.aider_update_result import AiderUpdateResult, Version
 from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.config import Config
-from aicode.models import CLAUD3_MODELS, get_model
+from aicode.models import get_model
 from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import check_gitdirectory, open_folder
 
@@ -157,7 +157,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     openai_key = config.openai_key
     model = get_model(args, anthropic_key, openai_key)
     aider_install_if_missing()
-    is_anthropic_model = model in CLAUD3_MODELS
+    is_anthropic_model = "claude" in model
     if is_anthropic_model:
         if anthropic_key is None:
             print("Claude key not found, please set one with --set-anthropic-key")
@@ -207,7 +207,8 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     if use_gui:
         cmd_list.append("--gui")
     if is_anthropic_model:
-        cmd_list.append("--sonnet")
+        cmd_list.append("--model")
+        cmd_list.append("sonnet")
     if args.auto_commit:
         cmd_list.append("--auto-commit")
     else:

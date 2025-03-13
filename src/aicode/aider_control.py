@@ -13,6 +13,23 @@ AIDER_CHAT = "aider-chat[playwright]"
 REQUIREMENTS = [AIDER_CHAT]
 
 
+# AIDER_CHAT = "git+https://github.com/Aider-AI/aider.git@main#egg=aider"
+# # REQUIREMENTS = [AIDER_CHAT]
+# PYPROJECT_TOML = """
+# [build-system]
+# requires = ["setuptools>=42", "wheel"]
+# build-backend = "setuptools.build_meta"
+
+# [project]
+# name = "my_project"
+# version = "0.1.0"
+# requires-python = ">=3.11, <3.12"
+# dependencies = [
+#     "aider-chat @ git+https://github.com/Aider-AI/aider.git"
+# ]
+# """
+
+
 def get_iso_env(path: Path) -> IsoEnv:
     """Creates and returns an IsoEnv instance"""
     args = IsoEnvArgs(

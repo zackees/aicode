@@ -15,7 +15,7 @@ class Model:
 MODELS = {
     "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
     "claude": Model(
-        "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-20250219"
+        "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-latest"
     ),
     "deepseek": Model(
         "deepseek",
@@ -24,7 +24,7 @@ MODELS = {
     ),
 }
 
-CLAUD3_MODELS = {"claude"}
+CLAUD3_MODELS = {MODELS["claude"].model_str}
 
 MODEL_CHOICES = list(MODELS.keys())
 
@@ -33,7 +33,7 @@ def get_model(args: Args, anthropic_key: str | None, openai_key: str | None) -> 
 
     if args.claude:
         assert "claude" in MODELS
-        return "claude"
+        return MODELS["claude"].model_str
     elif args.chatgpt:
         return CHAT_GPT
     elif args.model is not None:
