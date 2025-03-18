@@ -7,7 +7,6 @@ from os.path import exists
 from typing import Optional
 
 from aicode.aider_control import (
-    aider_fetch_update_status,
     aider_install,
     aider_installed,
     aider_purge,
@@ -123,9 +122,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
             sys.exit(1)
     if args.purge:
         print("Purging aider installation")
-        aider_purge()
-        config.aider_update_info = {}  # Purge stale update info
-        config.save()
+        aider_purge(path=None, config=config)
         sys.exit(0)
 
     if args.upgrade:
@@ -228,12 +225,16 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     if not has_git:
         cmd_list.append("--no-git")
     if not args.no_watch:
-        update_info = aider_fetch_update_status()
-        current_version: Version | None = update_info.get_current_version()
+        # update_info: AiderUpdateResult | None = config.aider_update_result
+        # update_info = aider_fetch_update_status()
         if update_info is not None:
-            min_version = Version("0.70.0")
-            if current_version >= min_version:
-                cmd_list.append("--watch")
+            current_version: Version | None = update_info.get_current_version()
+            if update_info is not None:
+                min_version = Version("0.70.0")
+                if current_version >= min_version:
+                    cmd_list.append("--watch")
+        else:
+            warnings.warn("Update info unknown in this run, not enabling watch")
 
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")

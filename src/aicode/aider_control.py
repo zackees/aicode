@@ -6,6 +6,7 @@ from pathlib import Path
 from iso_env import IsoEnv, IsoEnvArgs, Requirements
 
 from aicode.aider_update_result import AiderUpdateResult
+from aicode.config import Config
 from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import extract_version_string
 
@@ -143,7 +144,7 @@ def aider_upgrade(path: Path | None = None) -> int:
         return e.returncode
 
 
-def aider_purge(path: Path | None = None) -> int:
+def aider_purge(path: Path | None = None, config: Config | None = None) -> int:
     print("Purging aider...")
     path = path or AIDER_INSTALL_PATH
     if not aider_installed():
@@ -152,6 +153,10 @@ def aider_purge(path: Path | None = None) -> int:
     try:
         shutil.rmtree(path)
         print("Aider purged successfully.")
+        if config is not None:
+            print("Purging update info...")
+            config.aider_update_info = {}  # Purge stale update info
+            config.save()
         return 0
     except Exception as e:
         print(f"Error purging aider: {e}")
