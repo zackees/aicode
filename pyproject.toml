@@ -18,7 +18,7 @@ dependencies = [
     "uv-iso-env>=1.0.38",
 ]
 # Change this with the version number bump.
-version = "2.0.26"
+version = "2.0.27"
 
 [project.scripts]
 aicode = "aicode.main:main"
