@@ -16,9 +16,10 @@ dependencies = [
     "ruff",
     "semi-secret>=1.0.4",
     "uv-iso-env>=1.0.38",
+
 ]
 # Change this with the version number bump.
-version = "2.0.27"
+version = "2.0.28"
 
 [project.scripts]
 aicode = "aicode.main:main"
