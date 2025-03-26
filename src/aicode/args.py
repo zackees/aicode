@@ -124,9 +124,10 @@ def _parse_args(args: list[str] | None) -> Args:
         help="Enable auto-linting",
     )
     argparser.add_argument(
-        "--no-architect",
+        "-d",
+        "--deep",
         action="store_true",
-        help="Disable architect mode",
+        help="Usses architect mode",
     )
     model_group = argparser.add_mutually_exclusive_group()
     model_group.add_argument(
@@ -157,6 +158,8 @@ def _parse_args(args: list[str] | None) -> Args:
 
     prompt = fix_paths(parsed.prompt)
 
+    no_architect = not parsed.deep
+
     # Construct and return the Args dataclass instance
     return Args(
         prompt=prompt,
@@ -169,7 +172,7 @@ def _parse_args(args: list[str] | None) -> Args:
         auto_commit=parsed.auto_commit,
         no_watch=parsed.no_watch,
         lint=parsed.lint,
-        no_architect=parsed.no_architect,
+        no_architect=no_architect,
         claude=parsed.claude,
         model=parsed.model,
         chatgpt=parsed.chatgpt,

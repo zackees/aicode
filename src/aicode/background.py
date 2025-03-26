@@ -22,8 +22,14 @@ def _background_update_task(config: Config) -> None:
     except SystemExit:
         pass
     except subprocess.CalledProcessError as cpe:
+        stdout: bytes | str = cpe.stdout
+        stderr: bytes | str = cpe.stderr
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode("utf-8")
+        if isinstance(stderr, bytes):
+            stderr = stderr.decode("utf-8")
         warnings.warn(
-            f"Error checking for updates: {cpe}, rtn={cpe.returncode}, stdout={cpe.stdout}, stderr={cpe.stderr}"
+            f"Error checking for updates: {cpe}, rtn={cpe.returncode}, stdout={stdout}, stderr={stderr}"
         )
         pass
     except Exception as e:

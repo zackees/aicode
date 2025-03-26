@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import sys
+import warnings
 from pathlib import Path
 
 from iso_env import IsoEnv, IsoEnvArgs, Requirements
@@ -10,8 +11,10 @@ from aicode.config import Config
 from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import extract_version_string
 
-AIDER_CHAT = "aider-chat[playwright]"
-REQUIREMENTS = [AIDER_CHAT]
+REQUIREMENTS_TXT = """
+aider-chat[playwright]
+dotenv
+"""
 
 
 # AIDER_CHAT = "git+https://github.com/Aider-AI/aider.git@main#egg=aider"
@@ -45,7 +48,7 @@ def get_iso_env(path: Path) -> IsoEnv:
     """Creates and returns an IsoEnv instance"""
     args = IsoEnvArgs(
         venv_path=path / ".venv",
-        build_info=Requirements(AIDER_CHAT, python_version="==3.11.*"),
+        build_info=Requirements(REQUIREMENTS_TXT, python_version="==3.11.*"),
     )
     return IsoEnv(args)
 
@@ -133,15 +136,13 @@ def aider_install_path() -> str | None:
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
     path = path or AIDER_INSTALL_PATH
-    aider_purge(path)
-    iso = get_iso_env(path)
     try:
-        iso.run(["pip", "install", AIDER_CHAT], check=True)
-        print("Aider upgraded successfully.")
+        aider_purge(path)
+        aider_install(path)
         return 0
-    except subprocess.CalledProcessError as e:
-        print(f"Error upgrading aider: {e}")
-        return e.returncode
+    except Exception as e:
+        warnings.warn(f"Error upgrading aider: {e}")
+        return 1
 
 
 def aider_purge(path: Path | None = None, config: Config | None = None) -> int:

@@ -57,6 +57,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 Happy CODING!
 
 # Releases
+  * 2.0.30 - Architect mode is now off by default. It's not general purpose. To switch it on, use `--deep`
   * 2.0.18 - Internal refactor to make interactive usage of aider.chat easier to deal with.
   * 2.0.6 - Asking for restoring history is now disabled always.
   * 2.0.5 - Watchmode now enabled by default.
