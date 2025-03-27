@@ -34,10 +34,29 @@ dotenv
 # """
 
 
+def _get_highest_version_path(path: Path) -> Path:
+    subpaths = list(path.iterdir())
+    # paths will be labeled with 0, 1, 2, 3, etc.
+    path_ints = [int(p.name) for p in subpaths if p.is_dir() if p.name.isdigit()]
+    path_ints.sort()
+    if path_ints:
+        return path / str(path_ints[-1])
+    return path
+
+
+def _get_next_install_path(path: Path) -> Path:
+    subpaths = list(path.iterdir())
+    # paths will be labeled with 0, 1, 2, 3, etc.
+    path_ints = [int(p.name) for p in subpaths if p.is_dir()]
+    if path_ints:
+        return path / str(max(path_ints) + 1)
+    return path / "0"
+
+
 def _get_path(path: Path | None) -> Path:
     if path:
         return path
-    return AIDER_INSTALL_PATH
+    return _get_highest_version_path(AIDER_INSTALL_PATH)
 
 
 def _save_install_breadcrumb(path: Path) -> None:
