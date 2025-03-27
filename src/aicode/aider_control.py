@@ -162,9 +162,10 @@ def aider_install_path() -> str | None:
 
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
-    path = _get_path(path)
+    path = path or AIDER_INSTALL_PATH
+    path = _get_highest_version_path(path)
     try:
-        aider_purge(path)
+        # aider_purge(path)
         aider_install(path)
         return 0
     except Exception as e:
