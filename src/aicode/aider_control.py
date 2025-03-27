@@ -58,7 +58,7 @@ def aider_fetch_update_status() -> AiderUpdateResult:
     cp = aider_run(
         ["aider", "--just-check-update"],
         capture_output=True,
-        check=True,
+        check=False,
         text=False,
         universal_newlines=False,
         shell=False,
