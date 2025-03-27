@@ -34,6 +34,10 @@ dotenv
 # """
 
 
+def _get_path(path: Path | None) -> Path:
+    return path or AIDER_INSTALL_PATH
+
+
 def _save_install_breadcrumb(path: Path) -> None:
     """Saves a breadcrumb file to indicate that the installation was successful."""
     (path / "installed").touch()
@@ -89,7 +93,7 @@ def aider_fetch_update_status() -> AiderUpdateResult:
 
 
 def aider_installed(path: Path | None = None) -> bool:
-    path = path or AIDER_INSTALL_PATH
+    path = _get_path(path)
     return _has_install_breadcrumb(path)
 
 
@@ -97,7 +101,7 @@ def aider_run(
     cmd_list: list[str], path: Path | None = None, **process_args
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
-    path = path or AIDER_INSTALL_PATH
+    path = _get_path(path)
     if not aider_installed(path):
         aider_install(path)
 
@@ -111,7 +115,7 @@ def aider_run(
 
 def aider_install(path: Path | None = None) -> None:
     """Uses iso-env to install aider."""
-    path = path or AIDER_INSTALL_PATH
+    path = _get_path(path)
     if aider_installed(path):
         return
 
@@ -135,7 +139,7 @@ def aider_install_path() -> str | None:
 
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
-    path = path or AIDER_INSTALL_PATH
+    path = _get_path(path)
     try:
         aider_purge(path)
         aider_install(path)
@@ -147,7 +151,7 @@ def aider_upgrade(path: Path | None = None) -> int:
 
 def aider_purge(path: Path | None = None, config: Config | None = None) -> int:
     print("Purging aider...")
-    path = path or AIDER_INSTALL_PATH
+    path = _get_path(path)
     if not aider_installed():
         print("Aider is not installed.")
         return 0
