@@ -35,7 +35,9 @@ dotenv
 
 
 def _get_path(path: Path | None) -> Path:
-    return path or AIDER_INSTALL_PATH
+    if path:
+        return path
+    return AIDER_INSTALL_PATH
 
 
 def _save_install_breadcrumb(path: Path) -> None:
