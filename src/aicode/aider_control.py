@@ -57,10 +57,12 @@ def get_iso_env(path: Path) -> IsoEnv:
     return IsoEnv(args)
 
 
-def aider_fetch_update_status() -> AiderUpdateResult:
+def aider_fetch_update_status(path: Path | None = None) -> AiderUpdateResult:
     """Fetches the update string if it exists, else returns None if up to date"""
+    path = _get_path(path)
     cp = aider_run(
         ["aider", "--just-check-update"],
+        path=path,
         capture_output=True,
         check=False,
         text=False,
