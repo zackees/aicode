@@ -47,7 +47,7 @@ def _get_highest_version_path(path: Path) -> Path:
 def _get_next_install_path(path: Path) -> Path:
     subpaths = list(path.iterdir())
     # paths will be labeled with 0, 1, 2, 3, etc.
-    path_ints = [int(p.name) for p in subpaths if p.is_dir()]
+    path_ints = [int(p.name) for p in subpaths if p.is_dir() if p.name.isdigit()]
     if path_ints:
         return path / str(max(path_ints) + 1)
     return path / "0"
@@ -138,11 +138,13 @@ def aider_run(
 
 def aider_install(path: Path | None = None) -> None:
     """Uses iso-env to install aider."""
-    path = _get_path(path)
+    path = path or AIDER_INSTALL_PATH
+    path = _get_next_install_path(path)
     if aider_installed(path):
         return
 
-    print("Installing aider...")
+    # print("Installing aider...")
+    print(f"Installing aider to {path}...")
     path.mkdir(exist_ok=True, parents=True)
 
     # noqa: F841 - IsoEnv constructor creates the environment even if we don't use the returned object
@@ -162,8 +164,6 @@ def aider_install_path() -> str | None:
 
 def aider_upgrade(path: Path | None = None) -> int:
     print("Upgrading aider...")
-    path = path or AIDER_INSTALL_PATH
-    path = _get_highest_version_path(path)
     try:
         # aider_purge(path)
         aider_install(path)
@@ -175,12 +175,9 @@ def aider_upgrade(path: Path | None = None) -> int:
 
 def aider_purge(path: Path | None = None, config: Config | None = None) -> int:
     print("Purging aider...")
-    path = _get_path(path)
-    if not aider_installed():
-        print("Aider is not installed.")
-        return 0
+    path = path or AIDER_INSTALL_PATH
     try:
-        shutil.rmtree(path)
+        shutil.rmtree(path, ignore_errors=True)
         print("Aider purged successfully.")
         if config is not None:
             print("Purging update info...")

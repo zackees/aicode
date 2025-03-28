@@ -12,7 +12,7 @@ from aicode.aider_control import (
     aider_purge,
     aider_upgrade,
 )
-from aicode.aider_update_result import AiderUpdateResult, Version
+from aicode.aider_update_result import AiderUpdateResult
 from aicode.args import Args
 from aicode.background import background_update_task
 from aicode.config import Config
@@ -227,14 +227,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     if not args.no_watch:
         # update_info: AiderUpdateResult | None = config.aider_update_result
         # update_info = aider_fetch_update_status()
-        if update_info is not None:
-            current_version: Version | None = update_info.get_current_version()
-            if update_info is not None:
-                min_version = Version("0.70.0")
-                if current_version >= min_version:
-                    cmd_list.append("--watch")
-        else:
-            warnings.warn("Update info unknown in this run, not enabling watch")
+        cmd_list.append("--watch")
 
     cmd_list += args.prompt + unknown_args
     print("\nLoading aider:\n  remember to use /help for a list of commands\n")
