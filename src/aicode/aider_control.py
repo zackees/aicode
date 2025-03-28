@@ -12,7 +12,7 @@ from aicode.paths import AIDER_INSTALL_PATH
 from aicode.util import extract_version_string
 
 REQUIREMENTS_TXT = """
-aider-chat[playwright]
+aider-chat[playwright,browser]
 dotenv
 """
 
