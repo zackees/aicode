@@ -56,6 +56,7 @@ else grabbed package name `aicode` over a year ago and this is the best name I c
 
 Happy CODING!
 
+
 # Releases
   * 2.0.35 - Bunch of errors fixed. Upgrading and purging is now safer. New aider-chat backend installs are located in incrementing folders.
   * 2.0.30 - Architect mode is now off by default. It's not general purpose. To switch it on, use `--deep`
