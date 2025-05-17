@@ -172,7 +172,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
         if gemini_key is None:
             print("Gemini key not found, please set one with --set-gemini-key")
             sys.exit(1)
-        os.environ["GOOGLE_API_KEY"] = gemini_key
+        os.environ["GEMINI_API_KEY"] = gemini_key
     else:
         openai_key = config.openai_key
         if openai_key is None:
