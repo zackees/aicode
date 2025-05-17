@@ -25,7 +25,7 @@ MODELS = {
     "gemini": Model(
         "gemini",
         "The Google Gemini model.",
-        "google/gemini-1.5-pro",
+        "gemini/gemini-2.5-pro-preview-05-0",
     ),
 }
 
