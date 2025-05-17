@@ -48,10 +48,10 @@ def get_model(
         return CHAT_GPT
     elif args.model is not None:
         return MODELS[args.model].model_str if args.model in MODELS else args.model
-    elif gemini_key is not None:
-        return MODELS["gemini"].model_str
     elif anthropic_key is not None:
         return MODELS["claude"].model_str
     elif openai_key is not None:
         return CHAT_GPT
+    elif gemini_key is not None:
+        return MODELS["gemini"].model_str
     return MODELS["claude"].model_str
