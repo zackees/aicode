@@ -144,6 +144,11 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
         config.save()
         # config = Config.load()
         config = Config.load()
+    if args.set_gemini_key:
+        print("Setting gemini key")
+        config.gemini_key = args.set_gemini_key
+        config.save()
+        config = Config.load()
     has_git = check_gitdirectory()
 
     _check_gitignore()
@@ -152,14 +157,22 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     anthropic_key = config.anthropic_key
     # openai_key = config.get("openai_key")
     openai_key = config.openai_key
-    model = get_model(args, anthropic_key, openai_key)
+    gemini_key = config.gemini_key
+    model = get_model(args, anthropic_key, openai_key, gemini_key)
     aider_install_if_missing()
     is_anthropic_model = "claude" in model
+    is_gemini_model = "gemini" in model or args.gemini
+
     if is_anthropic_model:
         if anthropic_key is None:
             print("Claude key not found, please set one with --set-anthropic-key")
             sys.exit(1)
         os.environ["ANTHROPIC_API_KEY"] = anthropic_key
+    elif is_gemini_model:
+        if gemini_key is None:
+            print("Gemini key not found, please set one with --set-gemini-key")
+            sys.exit(1)
+        os.environ["GOOGLE_API_KEY"] = gemini_key
     else:
         openai_key = config.openai_key
         if openai_key is None:
@@ -209,7 +222,7 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     if args.auto_commit:
         cmd_list.append("--auto-commit")
     else:
-        cmd_list.append("--no-auto-commit")
+        cmd_list.append("--no-auto-commit")  # AIzaSyANavtg9g4BRnK60Lh9WcRHY_BSH9UnIwg
     # New feature to enable architect mode which seems to vastly
     # improve the code editing capatility of the various ai coding models.
     if not args.no_architect:

@@ -8,6 +8,7 @@ from aicode.aider_update_result import AiderUpdateResult
 class Config:
     openai_key: Optional[str] = None
     anthropic_key: Optional[str] = None
+    gemini_key: Optional[str] = None
     aider_update_info: Dict[str, Union[str, bool, None]] = field(default_factory=dict)
 
     @property

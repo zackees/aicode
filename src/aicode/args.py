@@ -58,6 +58,7 @@ class Args:
     prompt: list[str] = field(default_factory=list)
     set_key: str | None = None
     set_anthropic_key: str | None = None
+    set_gemini_key: str | None = None
     open_aider_path: bool = False
     purge: bool = False
     upgrade: bool = False
@@ -67,6 +68,7 @@ class Args:
     lint: bool = False
     no_architect: bool = False
     claude: bool = False
+    gemini: bool = False
     model: str | None = None
     chatgpt: bool = False
     gui: bool = False
@@ -93,6 +95,7 @@ def _parse_args(args: list[str] | None) -> Args:
     argparser.add_argument("prompt", nargs="*", help="Args to pass onto aider")
     argparser.add_argument("--set-key", help="Set OpenAI key")
     argparser.add_argument("--set-anthropic-key", help="Set Claude key")
+    argparser.add_argument("--set-gemini-key", help="Set Gemini key")
     argparser.add_argument(
         "--open-aider-path",
         action="store_true",
@@ -135,6 +138,11 @@ def _parse_args(args: list[str] | None) -> Args:
         action="store_true",
         help="Use Claude model",
     )
+    model_group.add_argument(
+        "--gemini",
+        action="store_true",
+        help="Use Google Gemini model",
+    )
     model_group.add_argument("--model", choices=MODEL_CHOICES, help="Model to use")
     model_group.add_argument(
         "--chatgpt",
@@ -165,6 +173,7 @@ def _parse_args(args: list[str] | None) -> Args:
         prompt=prompt,
         set_key=parsed.set_key,
         set_anthropic_key=parsed.set_anthropic_key,
+        set_gemini_key=parsed.set_gemini_key,
         open_aider_path=parsed.open_aider_path,
         purge=parsed.purge,
         upgrade=parsed.upgrade,
@@ -174,6 +183,7 @@ def _parse_args(args: list[str] | None) -> Args:
         lint=parsed.lint,
         no_architect=no_architect,
         claude=parsed.claude,
+        gemini=parsed.gemini,
         model=parsed.model,
         chatgpt=parsed.chatgpt,
         gui=parsed.gui,

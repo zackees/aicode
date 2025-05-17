@@ -22,6 +22,11 @@ MODELS = {
         "The deepseek model.",
         "deepseek",
     ),
+    "gemini": Model(
+        "gemini",
+        "The Google Gemini model.",
+        "google/gemini-1.5-pro",
+    ),
 }
 
 CLAUD3_MODELS = {MODELS["claude"].model_str}
@@ -29,7 +34,12 @@ CLAUD3_MODELS = {MODELS["claude"].model_str}
 MODEL_CHOICES = list(MODELS.keys())
 
 
-def get_model(args: Args, anthropic_key: str | None, openai_key: str | None) -> str:
+def get_model(
+    args: Args,
+    anthropic_key: str | None,
+    openai_key: str | None,
+    gemini_key: str | None,
+) -> str:
 
     if args.claude:
         assert "claude" in MODELS
@@ -37,9 +47,11 @@ def get_model(args: Args, anthropic_key: str | None, openai_key: str | None) -> 
     elif args.chatgpt:
         return CHAT_GPT
     elif args.model is not None:
-        return args.model
+        return MODELS[args.model].model_str if args.model in MODELS else args.model
+    elif gemini_key is not None:
+        return MODELS["gemini"].model_str
     elif anthropic_key is not None:
-        return "claude"
+        return MODELS["claude"].model_str
     elif openai_key is not None:
         return CHAT_GPT
-    return "claude"
+    return MODELS["claude"].model_str
