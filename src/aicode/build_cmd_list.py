@@ -214,6 +214,9 @@ def build_cmd_list_or_die(args: Args) -> tuple[list[str], Config]:
     else:
         cmd_list = ["aider", "--no-check-update"]
 
+    if args.message_file and args.message_file.exists():
+        cmd_list.extend(["--message-file", str(args.message_file)])
+
     if use_gui:
         cmd_list.append("--gui")
     if is_anthropic_model:

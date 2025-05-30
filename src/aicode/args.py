@@ -73,6 +73,7 @@ class Args:
     chatgpt: bool = False
     gui: bool = False
     cli: bool = False
+    message_file: Path | None = None
     unknown_args: list[str] = field(default_factory=list)
 
     @staticmethod
@@ -131,6 +132,11 @@ def _parse_args(args: list[str] | None) -> Args:
         "--deep",
         action="store_true",
         help="Usses architect mode",
+    )
+    argparser.add_argument(
+        "--message-file",
+        type=Path,
+        help="Path to a file containing messages to send to aider",
     )
     model_group = argparser.add_mutually_exclusive_group()
     model_group.add_argument(
