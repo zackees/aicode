@@ -14,6 +14,7 @@ class Model:
 
 MODELS = {
     "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
+    "o3": Model("o3", "The O3 model.", "openai/o3"),
     "claude": Model(
         "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-latest"
     ),
