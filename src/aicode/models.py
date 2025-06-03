@@ -42,6 +42,13 @@ def get_model(
     gemini_key: str | None,
 ) -> str:
 
+    deep = not args.no_architect
+    if deep:
+        if args.model is not None and args.model in MODELS:
+            return MODELS[args.model].model_str
+        if openai_key is not None:
+            return "openai/gpt-4o"
+
     if args.claude:
         assert "claude" in MODELS
         return MODELS["claude"].model_str

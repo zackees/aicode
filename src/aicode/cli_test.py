@@ -20,6 +20,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.argv.append("--model")
-    sys.argv.append("o3")  # Default model for testing
+    sys.argv.append("--deep")
     sys.exit(main())

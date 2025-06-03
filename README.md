@@ -58,6 +58,7 @@ Happy CODING!
 
 
 # Releases
+  * 2.1.0 - When using `--deep` mode, prefer to use `o3`, per aider-chat benchmarks for the winner in the polyglot test (6/3/2025).
   * 2.0.35 - Bunch of errors fixed. Upgrading and purging is now safer. New aider-chat backend installs are located in incrementing folders.
   * 2.0.30 - Architect mode is now off by default. It's not general purpose. To switch it on, use `--deep`
   * 2.0.18 - Internal refactor to make interactive usage of aider.chat easier to deal with.
