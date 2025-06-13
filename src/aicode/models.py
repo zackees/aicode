@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from aicode.args import Args
 
 # Represents the best model so far.
-CHAT_GPT = "openai/o3"
+CHAT_GPT = "openai/gpt-4.1"
 
 SONNET = "anthropic/claude-sonnet-4-20250514"
 OPUS = "anthropic/claude-opus-4-20250514"
