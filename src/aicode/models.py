@@ -2,7 +2,11 @@ from dataclasses import dataclass
 
 from aicode.args import Args
 
-CHAT_GPT = "openai/gpt-4o"
+# Represents the best model so far.
+CHAT_GPT = "openai/o3"
+
+SONNET = "anthropic/claude-sonnet-4-20250514"
+OPUS = "anthropic/claude-opus-4-20250514"
 
 
 @dataclass
@@ -13,10 +17,16 @@ class Model:
 
 
 MODELS = {
-    "chatgpt": Model("gpt-4o", "The GPT-4o model.", CHAT_GPT),
+    "chatgpt": Model("gpt-4o", "The GPT-o3 model.", CHAT_GPT),
     "o3": Model("o3", "The O3 model.", "openai/o3"),
     "claude": Model(
-        "claude", "The Claude model.", "anthropic/claude-3-7-sonnet-latest"
+        "claude", "The Claude model.", "anthropic/claude-sonnet-4-20250514"
+    ),
+    "sonnet": Model(
+        "sonnet", "The Claude Sonnet model, best performance for price.", SONNET
+    ),
+    "opus": Model(
+        "opus", "The Claude Opus model, best performance but high cost.", OPUS
     ),
     "deepseek": Model(
         "deepseek",
